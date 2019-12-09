@@ -1,0 +1,11 @@
+*~
+.DS_Store
+*.iml
+.idea/
+package-lock.json
+.gradle/
+.project
+.classpath
+.settings/
+target/
+.vscode/

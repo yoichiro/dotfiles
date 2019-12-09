@@ -1,0 +1,11 @@
+[user]
+	name = Yoichiro Tanaka
+	email = yoichiro6642@gmail.com
+[core]
+	editor = vim
+	excludesfile = /home/yoichiro/.gitignore_global
+[color]
+	ui = auto
+	diff = auto
+	status = auto
+	branch = auto
