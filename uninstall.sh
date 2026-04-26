@@ -156,6 +156,14 @@ for rel in "${CLAUDE_FILES[@]}"; do
   unlink_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
 done
 
+CLAUDE_SKILLS=(
+  design-doc-writer
+  drawio
+)
+for name in "${CLAUDE_SKILLS[@]}"; do
+  unlink_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
+done
+
 unlink_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"
 
 for prompt_file in "$DOTFILES_DIR"/zprezto/prompts/prompt_*_setup; do

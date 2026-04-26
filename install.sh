@@ -105,6 +105,19 @@ for rel in "${CLAUDE_FILES[@]}"; do
   link_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
 done
 
+# Claude Code skills: link self-authored skill directories under ~/.claude/skills/
+# as whole-directory symlinks, so adding/removing files inside a skill does not
+# require re-running install.sh. Note: gws-*, firebase-* and find-skills under
+# ~/.claude/skills/ are managed elsewhere (they symlink into ~/.agents/skills/)
+# and are intentionally not handled here.
+CLAUDE_SKILLS=(
+  design-doc-writer
+  drawio
+)
+for name in "${CLAUDE_SKILLS[@]}"; do
+  link_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
+done
+
 # zprezto runcom: take over ~/.zpreztorc with our loader, which sources the
 # upstream zpreztorc and then layers our overrides on top (zpreztorc.local).
 link_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"

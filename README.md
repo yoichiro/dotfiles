@@ -38,6 +38,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
 | `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/` | Self-authored Claude Code skills (whole-directory symlink). Currently: `design-doc-writer`, `drawio` |
 
 ## Setup on a new machine
 
