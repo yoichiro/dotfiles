@@ -7,6 +7,10 @@ installed at `~/.zprezto`. The custom prompt theme(s) under `zprezto/prompts/`
 also rely on zprezto's `helper` and `git` modules being loaded — this is set
 up by the `zpreztorc` shipped here.
 
+The Claude Code config under `claude/` assumes [Claude Code](https://claude.com/claude-code)
+is installed and that its config root is `~/.claude/`. The `notify-windows.sh`
+hook is WSL2-specific (calls Windows PowerShell at a hardcoded path).
+
 After install, `~/.zpreztorc` becomes a symlink to `zprezto/zpreztorc.loader`
 in this repo. The loader sources the upstream `~/.zprezto/runcoms/zpreztorc`
 first, then layers our overrides from `zprezto/zpreztorc.local`. The upstream
@@ -29,6 +33,11 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `zprezto/zpreztorc.loader` | `~/.zpreztorc` | Two-line loader: sources upstream `zpreztorc`, then `zpreztorc.local` |
 | `zprezto/zpreztorc.local` | _(sourced from loader)_ | Diff vs upstream: extra modules (`git`/`autosuggestions`/`syntax-highlighting`), `yoichiro` prompt theme, syntax-highlighting tweaks |
 | `zprezto/prompts/prompt_*_setup` | `~/.zsh/prompts/prompt_*_setup` | Custom **zprezto** prompt themes (require zprezto's `helper` and `git` modules at runtime) |
+| `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code global instructions (persona, principles) |
+| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings: hooks, statusLine, enabled plugins, spinner verbs |
+| `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
+| `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
+| `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 
 ## Setup on a new machine
 
@@ -89,3 +98,7 @@ $EDITOR ~/.paths.local ~/.envs.local
 
 See `.gitignore`. In short: `*.local`, `*.bak`, editor swap files, and
 `.claude/settings.local.json`.
+
+Claude Code itself maintains a separate file at `~/.claude.json` (top-level,
+not inside `~/.claude/`). It holds runtime state, OAuth account info, and
+**MCP server credentials in plain text** — never link or commit it.

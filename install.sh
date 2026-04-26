@@ -90,6 +90,21 @@ for name in "${FILES[@]}"; do
   link_path "$DOTFILES_DIR/$name" "$HOME/.$name"
 done
 
+# Claude Code config: link individual files under ~/.claude/. Targets are
+# nested (hooks/, commands/), so use explicit relative paths instead of the
+# flat $HOME/.<name> scheme used above. link_path's mkdir -p handles the
+# subdirectories automatically.
+CLAUDE_FILES=(
+  CLAUDE.md
+  settings.json
+  statusline-command.sh
+  hooks/notify-windows.sh
+  commands/back-to-main.md
+)
+for rel in "${CLAUDE_FILES[@]}"; do
+  link_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
+done
+
 # zprezto runcom: take over ~/.zpreztorc with our loader, which sources the
 # upstream zpreztorc and then layers our overrides on top (zpreztorc.local).
 link_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"

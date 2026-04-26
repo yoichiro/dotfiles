@@ -145,6 +145,17 @@ for name in "${FILES[@]}"; do
   unlink_path "$DOTFILES_DIR/$name" "$HOME/.$name"
 done
 
+CLAUDE_FILES=(
+  CLAUDE.md
+  settings.json
+  statusline-command.sh
+  hooks/notify-windows.sh
+  commands/back-to-main.md
+)
+for rel in "${CLAUDE_FILES[@]}"; do
+  unlink_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
+done
+
 unlink_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"
 
 for prompt_file in "$DOTFILES_DIR"/zprezto/prompts/prompt_*_setup; do

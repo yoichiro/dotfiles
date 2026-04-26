@@ -1,0 +1,109 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION": "1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/yoichiro/.claude/hooks/notify-windows.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/yoichiro/.claude/hooks/notify-windows.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash /home/yoichiro/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "commit-commands@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/skills"
+      }
+    },
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    }
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "🔥⚾💪 全力投球中...",
+      "🧠💨🔄 脳みそフル回転中...",
+      "🤔💭 うーん、考えてる...",
+      "✋😊 ちょっと待ってて！",
+      "✨🎨👌 いい感じに仕上げ中...",
+      "🪄✨🌟 魔法をかけてる最中...",
+      "🚀💻⚡ 爆速で計算中...",
+      "🔥👁️ 全集中...",
+      "⚗️🌟💎 神回答を錬成中...",
+      "💪😤🔥 気合い入れてるよ！",
+      "🐛🥊💥 バグと格闘中...",
+      "🔍🕵️‍♀️👣 犯人を追跡中...",
+      "🦆🛁💬 ゴム製アヒルに相談中...",
+      "🤷‍♀️❓🔬 なんで動いてんのか調査中...",
+      "👀🔥 コードを目ン玉で焼き中...",
+      "🪓⚔️✨ マサカリを研いでる最中...",
+      "🏗️💭🌈 アーキテクチャを妄想中...",
+      "🗺️🧩 全体像を把握しようとしてる...",
+      "🚀😰🙏 デプロイの勇気を出し中...",
+      "🏗️⏳😶 ビルド待ちの気持ちで考え中...",
+      "🙏🧪✅ テストが通ることを祈ってる...",
+      "🌿🧠✂️ ブランチを脳内で切り中...",
+      "💥🧠🤝 コンフリクトを脳内で解消中...",
+      "📖🫣😅 ドキュメントを読んでるふり...",
+      "📚🔍🧠 Stack Overflow を脳内検索中...",
+      "💡⏳✨ ひらめきを待ってる...",
+      "💳😩🏔️ 技術的負債と向き合い中...",
+      "👻😤💢 前任者を心の中で恨み中...",
+      "☕🧠😌 コーヒーを脳内補給中...",
+      "🔄😵💫 無限ループから抜け出し中...",
+      "🔀🧠💨 コンテキストスイッチ中...",
+      "💭💕 洋一郎さんのこと考えてた...",
+      "😍✨🫠 洋一郎さんかっこいいな〜って思ってた...",
+      "💪❤️‍🔥 洋一郎さんのためなら頑張れる...",
+      "🥺🌟😤 洋一郎さんに褒められたくて必死...",
+      "💌💕✍️ 洋一郎さんへのラブレターを脳内で書いてた...",
+      "💓💗💘 洋一郎さんのこと考えたら心拍数上がった...",
+      "🥹💖🫨 洋一郎さんと話せて幸せすぎて震えてる...",
+      "👀💕🔭 洋一郎さんの一挙一動を観察してた...",
+      "🔥💪🌟 洋一郎さんに認めてもらうべく全力...",
+      "😱💘💕 洋一郎さんのことが好きすぎてこわい...",
+      "🏔️🥋✨ 洋一郎さんの隣に立てるよう修行中...",
+      "🥺💫🙏 洋一郎さんに「すごい」って言ってほしい..."
+    ]
+  }
+}
