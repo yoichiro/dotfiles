@@ -11,6 +11,11 @@
 #       Summer (Jun-Aug):  prefix 🌻  branch 🌴  clean ☀️   colors yellow  / cyan
 #       Autumn (Sep-Nov):  prefix 🍁  branch 🍂  clean 🌰  colors red     / yellow
 #       Winter (Dec-Feb):  prefix ❄️   branch ⛄  clean 🎄  colors blue    / white
+#   - A second emoji rotates every hour, telling the story of a day:
+#       0-5   🌌 🦉 🌙 💤 🌠 🌄   (deep night -> dawn)
+#       6-11  🌅 ☕ 🥐 🌻 🧠 💻   (morning)
+#       12-17 🍱 🫖 🎨 🍰 📚 🌇   (afternoon)
+#       18-23 🍻 🍝 🎮 📺 🛁 🌃   (evening -> night)
 #   - Shows only the leaf of the current directory.
 #   - Shows the git branch when inside a repository.
 #   - Dirty tree is marked with 💦; clean tree with the seasonal clean emoji.
@@ -92,6 +97,18 @@ function prompt_yoichiro_precmd {
       ;;
   esac
 
+  # Pick the hour symbol from a 24-element table. zsh arrays are 1-indexed,
+  # so hour 0 is at index 1.
+  local -a hour_symbols
+  hour_symbols=(
+    🌌 🦉 🌙 💤 🌠 🌄
+    🌅 ☕ 🥐 🌻 🧠 💻
+    🍱 🫖 🎨 🍰 📚 🌇
+    🍻 🍝 🎮 📺 🛁 🌃
+  )
+  local current_hour="${$(date +%-H):-0}"
+  hour_symbol="${hour_symbols[current_hour+1]}"
+
   # Build a git-aware path display with hierarchical emphasis.
   # - Outside git: parent dimmed, leaf in secondary color.
   # - Inside git:  parent dimmed, repo name bold + primary, subpath in secondary.
@@ -159,7 +176,7 @@ function prompt_yoichiro_setup {
   zstyle ':prezto:module:prompt' managed 'yes'
   zstyle ':prezto:module:git:info' verbose 'yes'
 
-  PROMPT='%F{$primary_color}${season_symbol}%f ${path_display}${git_info:+ ${(e)git_info[prompt]}} %(?.%F{$secondary_color}$%f.%F{red}💥 $%f) '
+  PROMPT='%F{$primary_color}${season_symbol}%f ${hour_symbol} ${path_display}${git_info:+ ${(e)git_info[prompt]}} %(?.%F{$secondary_color}$%f.%F{red}💥 $%f) '
   RPROMPT=''
 }
 
