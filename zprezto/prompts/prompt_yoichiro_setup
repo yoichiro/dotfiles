@@ -1,0 +1,167 @@
+#
+# A seasonal pop-style theme.
+#
+# Authors:
+#   Yoichiro (designed with Claude)
+#
+# Features:
+#   - Single-line, left-aligned prompt.
+#   - Emoji and colors rotate automatically with the month:
+#       Spring (Mar-May):  prefix 🌸  branch 🌿  clean ✨  colors magenta / green
+#       Summer (Jun-Aug):  prefix 🌻  branch 🌴  clean ☀️   colors yellow  / cyan
+#       Autumn (Sep-Nov):  prefix 🍁  branch 🍂  clean 🌰  colors red     / yellow
+#       Winter (Dec-Feb):  prefix ❄️   branch ⛄  clean 🎄  colors blue    / white
+#   - Shows only the leaf of the current directory.
+#   - Shows the git branch when inside a repository.
+#   - Dirty tree is marked with 💦; clean tree with the seasonal clean emoji.
+#   - The terminating $ turns red and is prefixed with 💥 when the last
+#     command failed.
+#
+# Usage:
+#   In ${ZDOTDIR:-$HOME}/.zpreztorc:
+#     zstyle ':prezto:module:prompt' theme 'yoichiro'
+#
+
+pmodload 'helper'
+
+# Shrink each intermediate path segment to its first few characters.
+# Leading dots are preserved (e.g. ".claude" -> ".cla").
+function prompt_yoichiro_shrink_path {
+  emulate -L zsh
+  setopt extended_glob
+  local input="$1"
+  local n="${2:-3}"
+  local leading=''
+  if [[ "$input" == /* ]]; then
+    leading='/'
+    input="${input#/}"
+  fi
+  [[ -z "$input" ]] && { print -- "$leading"; return }
+  local -a segs out
+  segs=("${(@s:/:)input}")
+  local seg dots rest
+  for seg in "${segs[@]}"; do
+    dots="${seg%%[^.]*}"
+    rest="${seg#$dots}"
+    if (( ${#rest} > n )); then
+      out+=("${dots}${rest[1,n]}")
+    else
+      out+=("$seg")
+    fi
+  done
+  print -- "${leading}${(j:/:)out}"
+}
+
+function prompt_yoichiro_precmd {
+  # Preserve the user command's exit status so %(?..) in PROMPT reflects
+  # the last user command, not git-info or any other internal call below.
+  local last_exit=$?
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+
+  # Pick the season based on the current month.
+  local month="$(date +%m)"
+  case "$month" in
+    03|04|05)
+      season_symbol='🌸'
+      season_branch='🌿'
+      season_clean='✨'
+      primary_color='magenta'
+      secondary_color='green'
+      ;;
+    06|07|08)
+      season_symbol='🌻'
+      season_branch='🌴'
+      season_clean='☀️'
+      primary_color='yellow'
+      secondary_color='cyan'
+      ;;
+    09|10|11)
+      season_symbol='🍁'
+      season_branch='🍂'
+      season_clean='🌰'
+      primary_color='red'
+      secondary_color='yellow'
+      ;;
+    *)
+      season_symbol='❄️'
+      season_branch='⛄'
+      season_clean='🎄'
+      primary_color='blue'
+      secondary_color='white'
+      ;;
+  esac
+
+  # Build a git-aware path display with hierarchical emphasis.
+  # - Outside git: parent dimmed, leaf in secondary color.
+  # - Inside git:  parent dimmed, repo name bold + primary, subpath in secondary.
+  local pwd_tilde git_root repo_parent parent_tilde repo_name inside_repo parent leaf parent_prefix sep
+  pwd_tilde="${PWD/#$HOME/~}"
+  git_root="$(command git rev-parse --show-toplevel 2>/dev/null)"
+  if [[ -n "$git_root" ]]; then
+    repo_parent="${git_root:h}"
+    parent_tilde="${repo_parent/#$HOME/~}"
+    parent_tilde="$(prompt_yoichiro_shrink_path "$parent_tilde")"
+    repo_name="${git_root:t}"
+    inside_repo="${PWD#$git_root}"
+    sep='/'
+    [[ "$parent_tilde" == "/" ]] && sep=''
+    path_display="%F{8}${parent_tilde}${sep}%f%B%F{${primary_color}}${repo_name}%f%b%F{${secondary_color}}${inside_repo}%f"
+  else
+    parent="${pwd_tilde:h}"
+    leaf="${pwd_tilde:t}"
+    if [[ "$parent" == "$pwd_tilde" ]]; then
+      path_display="%F{${secondary_color}}${pwd_tilde}%f"
+    else
+      parent_prefix="$(prompt_yoichiro_shrink_path "$parent")"
+      [[ "$parent_prefix" != "/" ]] && parent_prefix="${parent_prefix}/"
+      path_display="%F{8}${parent_prefix}%f%F{${secondary_color}}${leaf}%f"
+    fi
+  fi
+
+  # Configure git-info with the current season's look.
+  zstyle ':prezto:module:git:info:branch' format "%F{$primary_color}${season_branch} %b%f"
+  zstyle ':prezto:module:git:info:clean'  format " %F{yellow}${season_clean}%f"
+  zstyle ':prezto:module:git:info:dirty'  format " %F{red}💦%f"
+  zstyle ':prezto:module:git:info:keys'   format \
+    'prompt'  '%b%C%D' \
+    'rprompt' ''
+
+  if (( $+functions[git-info] )); then
+    git-info
+  fi
+
+  return $last_exit
+}
+
+function prompt_yoichiro_help {
+  cat <<EOT
+A seasonal pop-style theme. Emoji and colors rotate automatically with the
+current month (Spring / Summer / Autumn / Winter).
+
+In ${ZDOTDIR:-$HOME}/.zpreztorc:
+  zstyle ':prezto:module:prompt' theme 'yoichiro'
+EOT
+}
+
+function prompt_yoichiro_preview {
+  prompt_preview_theme 'yoichiro'
+}
+
+function prompt_yoichiro_setup {
+  setopt LOCAL_OPTIONS
+  unsetopt XTRACE KSH_ARRAYS
+  prompt_opts=(cr percent sp subst)
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd prompt_yoichiro_precmd
+
+  zstyle ':prezto:module:prompt' managed 'yes'
+  zstyle ':prezto:module:git:info' verbose 'yes'
+
+  PROMPT='%F{$primary_color}${season_symbol}%f ${path_display}${git_info:+ ${(e)git_info[prompt]}} %(?.%F{$secondary_color}$%f.%F{red}💥 $%f) '
+  RPROMPT=''
+}
+
+prompt_yoichiro_setup "$@"
+# vim: ft=zsh

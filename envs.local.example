@@ -1,0 +1,34 @@
+# Template for ~/.envs.local
+#
+# Copy this file to ~/.envs.local and edit it for the current machine.
+# This file is sourced from `envs` at the very end, so it can append to or
+# override anything defined in `envs`.
+#
+#   cp ~/.dotfiles/envs.local.example ~/.envs.local
+#
+# Use this file for any machine-specific environment variables, including
+# secrets (API keys, tokens). When you put secrets here, lock the file down:
+#
+#   chmod 600 ~/.envs.local
+
+# ===== Variables currently used on my machines =====
+# Fill in the values on each new machine.
+
+# Slack MCP server authentication tokens (browser-extracted xoxc/xoxd pair).
+# Used by the Slack MCP server to talk to the Slack API on my behalf.
+# export SLACK_MCP_XOXC_TOKEN=""
+# export SLACK_MCP_XOXD_TOKEN=""
+
+# GitHub Personal Access Token used by the GitHub MCP server.
+# export GITHUB_PAT_FOR_MCP=""
+
+# ===== Other examples =====
+
+# --- Override the default editor on this machine ---
+# export EDITOR="code --wait"
+
+# --- Project / tool specific defaults ---
+# export GOOGLE_CLOUD_PROJECT="my-project-id"
+
+# --- Locale tweaks ---
+# export LANG="en_US.UTF-8"

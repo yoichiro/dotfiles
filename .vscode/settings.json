@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "zshrc": "shellscript",
+    "bashrc": "shellscript",
+    "profile": "shellscript",
+    "aliases": "shellscript",
+    "envs": "shellscript",
+    "envs.local.example": "shellscript",
+    "paths": "shellscript",
+    "paths.local.example": "shellscript"
+  }
+}

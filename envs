@@ -1,0 +1,12 @@
+export EDITOR=vi
+export LESS="-g -i -M -R -w -X -z-4"
+
+# Set the heap size of Node.js
+export NODE_OPTIONS="--max-old-space-size=16384"
+
+# Required by sdkman-init.sh (sourced from zshrc).
+export SDKMAN_DIR="$HOME/.sdkman"
+
+# Load machine-specific environment overrides (including secrets).
+# Not tracked by git. Keep chmod 600 when it contains secrets.
+[ -f "$HOME/.envs.local" ] && source "$HOME/.envs.local"

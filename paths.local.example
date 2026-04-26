@@ -1,0 +1,24 @@
+# Template for ~/.paths.local
+#
+# Copy this file to ~/.paths.local and edit it for the current machine.
+# This file is sourced from `paths` at the very end, so it can append to or
+# override anything defined in `paths`.
+#
+#   cp ~/.dotfiles/paths.local.example ~/.paths.local
+
+# ===== Variables currently used on my machines =====
+# Uncomment the entries that apply to the current machine.
+
+# WSL: VS Code is installed on the Windows host side, so we add its install
+# directory to PATH. VSCODE_HOME also acts as a single source of truth for
+# that path (referenced from PATH below).
+# export VSCODE_HOME="/mnt/c/Program Files/Microsoft VS Code"
+# export PATH=$VSCODE_HOME:$PATH
+
+# ===== Other examples =====
+
+# --- macOS: Homebrew on Apple Silicon ---
+# export PATH=/opt/homebrew/bin:$PATH
+
+# --- Custom tool installed only on this machine ---
+# export PATH=$HOME/some-tool/bin:$PATH

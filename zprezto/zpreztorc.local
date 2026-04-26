@@ -1,0 +1,27 @@
+# Local zprezto overrides applied on top of upstream zpreztorc.
+# Sourced from zpreztorc.loader after the upstream defaults.
+
+# --- Extend the pmodule list ---
+# Read whatever upstream set, then append our extra modules. This way new
+# modules added to upstream's default list are picked up automatically.
+local -a _pmods
+zstyle -g _pmods ':prezto:load' pmodule
+zstyle ':prezto:load' pmodule "${_pmods[@]}" \
+  'git' \
+  'autosuggestions' \
+  'syntax-highlighting'
+unset _pmods
+
+# --- Module-specific overrides ---
+# zstyle is overwrite-on-same-pattern, so these win over upstream values.
+zstyle ':prezto:module:autosuggestions:color' found 'fg=white'
+zstyle ':prezto:module:prompt' theme 'yoichiro'
+
+zstyle ':prezto:module:syntax-highlighting' color 'yes'
+zstyle ':prezto:module:syntax-highlighting' highlighters \
+  'main' \
+  'brackets' \
+  'pattern' \
+  'line' \
+  'cursor' \
+  'root'

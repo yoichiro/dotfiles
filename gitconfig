@@ -1,0 +1,9 @@
+[user]
+	email = yoichiro6642@gmail.com
+	name = Yoichiro Tanaka
+[core]
+	editor = vi
+[pager]
+	branch = false
+[init]
+	defaultBranch = main

@@ -1,0 +1,9 @@
+# Loader for ~/.zpreztorc.
+#
+# Strategy: keep ~/.zprezto/runcoms/zpreztorc untouched (so `git pull` in the
+# zprezto repo always works), then layer our own changes on top.
+#
+# Order matters: upstream first, then local overrides.
+
+source "${ZDOTDIR:-$HOME}/.zprezto/runcoms/zpreztorc"
+source "${ZDOTDIR:-$HOME}/.dotfiles/zprezto/zpreztorc.local"

@@ -1,0 +1,15 @@
+alias st='git status -s -b -uall'
+alias br='git branch'
+alias ck='git checkout'
+alias lg='git log --graph --date=short --pretty="format:%C(yellow)%h %C(cyan)%ad %C(green)%an%Creset%x09%s %C(red)%d%Creset"'
+alias ls='ls -vFG --color=auto'
+alias ll='ls -lavFG --color=auto'
+alias web='python3 -m http.server'
+alias gcloud-blog-server='gcloud config set project eisbahn-jp-web-service'
+alias emacs='emacs -nw'
+alias activate='source ./venv/bin/activate'
+alias gemini='GOOGLE_CLOUD_PROJECT="gemini-cli-464100" gemini'
+
+# Drop the zprezto git module's `gws` alias so our `st` above stays as the
+# canonical short status command. Sourced after zprezto, so this wins.
+unalias gws 2>/dev/null
