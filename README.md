@@ -39,6 +39,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 | `claude/skills/<name>/` | `~/.claude/skills/<name>/` | Self-authored Claude Code skills (whole-directory symlink). Currently: `design-doc-writer`, `drawio` |
+| `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 
 ## Setup on a new machine
 
@@ -94,6 +95,21 @@ cp ~/.dotfiles/envs.local.example ~/.envs.local
 chmod 600 ~/.envs.local   # if it will contain secrets
 $EDITOR ~/.paths.local ~/.envs.local
 ```
+
+## Claude Code MCP servers
+
+Claude Code stores MCP server definitions in `~/.claude.json` (the file
+itself is NOT tracked — it mixes runtime state and plain-text credentials),
+so we manage them imperatively via a bootstrap script:
+
+```sh
+~/.dotfiles/claude/mcp-setup.sh   # registers all servers, idempotent
+claude mcp list                   # verify
+```
+
+The script reads tokens from `~/.envs.local` (variables prefixed `MCP_*`).
+Add a new server by editing the script and re-running it; remove one with
+`claude mcp remove --scope user <name>` and deleting its `add` line.
 
 ## What is NOT tracked
 

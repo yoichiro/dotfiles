@@ -139,3 +139,4 @@ else
   echo "Done. No files needed backing up."
 fi
 echo "Reminder: put machine-local secrets in ~/.envs.local (chmod 600)."
+echo "Then:     ./claude/mcp-setup.sh   # to register Claude Code MCP servers"

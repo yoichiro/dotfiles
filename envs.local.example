@@ -11,16 +11,31 @@
 #
 #   chmod 600 ~/.envs.local
 
-# ===== Variables currently used on my machines =====
-# Fill in the values on each new machine.
+# ===== MCP server credentials =====
+# Naming convention: MCP_<SERVER>_<KIND> (so all MCP-related tokens cluster).
+# Consumed by ~/.dotfiles/claude/mcp-setup.sh; missing values cause that
+# script to abort early with a clear error.
 
-# Slack MCP server authentication tokens (browser-extracted xoxc/xoxd pair).
-# Used by the Slack MCP server to talk to the Slack API on my behalf.
-# export SLACK_MCP_XOXC_TOKEN=""
-# export SLACK_MCP_XOXD_TOKEN=""
+# Slack MCP server (browser-extracted xoxc/xoxd token pair).
+# export MCP_SLACK_XOXC_TOKEN=""
+# export MCP_SLACK_XOXD_TOKEN=""
 
-# GitHub Personal Access Token used by the GitHub MCP server.
-# export GITHUB_PAT_FOR_MCP=""
+# GitHub MCP server: Personal Access Token.
+# export MCP_GITHUB_PAT=""
+
+# inter-agent-bus MCP server: Bearer token for the iab_ scheme.
+# export MCP_IAB_TOKEN=""
+
+# activity-reporting (Advocu) MCP server access token.
+# export MCP_ADVOCU_TOKEN=""
+
+# google-developer-knowledge MCP server: X-Goog-Api-Key value.
+# export MCP_GDK_API_KEY=""
+
+# ===== Other tool credentials =====
+
+# GitHub PAT used by the Gemini CLI (NOT by the github MCP server above).
+# export GEMINI_GITHUB_PAT=""
 
 # ===== Other examples =====
 
