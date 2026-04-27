@@ -118,6 +118,17 @@ for name in "${CLAUDE_SKILLS[@]}"; do
   link_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
 done
 
+# Gemini CLI config: link individual files under ~/.gemini/. Same pattern
+# as CLAUDE_FILES above. Other files in ~/.gemini/ (settings.json, .env,
+# oauth_creds.json, history/, telemetry.json, .git/ checkpointing, ...) are
+# runtime/state/secret data and intentionally NOT managed here.
+GEMINI_FILES=(
+  GEMINI.md
+)
+for rel in "${GEMINI_FILES[@]}"; do
+  link_path "$DOTFILES_DIR/gemini/$rel" "$HOME/.gemini/$rel"
+done
+
 # zprezto runcom: take over ~/.zpreztorc with our loader, which sources the
 # upstream zpreztorc and then layers our overrides on top (zpreztorc.local).
 link_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"
@@ -139,4 +150,5 @@ else
   echo "Done. No files needed backing up."
 fi
 echo "Reminder: put machine-local secrets in ~/.envs.local (chmod 600)."
-echo "Then:     ./claude/mcp-setup.sh   # to register Claude Code MCP servers"
+echo "Then:     ./claude/mcp-setup.sh    # to register Claude Code MCP servers"
+echo "          ./gemini/mcp-setup.sh    # to register Gemini CLI MCP servers"

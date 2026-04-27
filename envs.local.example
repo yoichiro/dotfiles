@@ -32,6 +32,9 @@
 # google-developer-knowledge MCP server: X-Goog-Api-Key value.
 # export MCP_GDK_API_KEY=""
 
+# imagen MCP server (Gemini CLI side): Google Cloud project ID.
+# export MCP_IMAGEN_PROJECT_ID=""
+
 # ===== Other tool credentials =====
 
 # GitHub PAT used by the Gemini CLI (NOT by the github MCP server above).

@@ -164,6 +164,13 @@ for name in "${CLAUDE_SKILLS[@]}"; do
   unlink_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
 done
 
+GEMINI_FILES=(
+  GEMINI.md
+)
+for rel in "${GEMINI_FILES[@]}"; do
+  unlink_path "$DOTFILES_DIR/gemini/$rel" "$HOME/.gemini/$rel"
+done
+
 unlink_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"
 
 for prompt_file in "$DOTFILES_DIR"/zprezto/prompts/prompt_*_setup; do

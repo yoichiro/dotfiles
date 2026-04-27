@@ -11,6 +11,11 @@ The Claude Code config under `claude/` assumes [Claude Code](https://claude.com/
 is installed and that its config root is `~/.claude/`. The `notify-windows.sh`
 hook is WSL2-specific (calls Windows PowerShell at a hardcoded path).
 
+The Gemini CLI config under `gemini/` assumes [Gemini CLI](https://github.com/google-gemini/gemini-cli)
+is installed and its config root is `~/.gemini/`. Note: `~/.gemini/` also
+contains a `.git/` directory used by Gemini's own checkpointing feature —
+do not confuse it with this dotfiles repo.
+
 After install, `~/.zpreztorc` becomes a symlink to `zprezto/zpreztorc.loader`
 in this repo. The loader sources the upstream `~/.zprezto/runcoms/zpreztorc`
 first, then layers our overrides from `zprezto/zpreztorc.local`. The upstream
@@ -40,6 +45,8 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 | `claude/skills/<name>/` | `~/.claude/skills/<name>/` | Self-authored Claude Code skills (whole-directory symlink). Currently: `design-doc-writer`, `drawio` |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
+| `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI global instructions (persona, principles) |
+| `gemini/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers for Gemini CLI via `gemini mcp add`. Tokens read from `~/.envs.local`. Idempotent. |
 
 ## Setup on a new machine
 
@@ -110,6 +117,21 @@ claude mcp list                   # verify
 The script reads tokens from `~/.envs.local` (variables prefixed `MCP_*`).
 Add a new server by editing the script and re-running it; remove one with
 `claude mcp remove --scope user <name>` and deleting its `add` line.
+
+## Gemini CLI MCP servers
+
+Same idea for Gemini CLI: definitions live in `~/.gemini/settings.json`
+(plain-text tokens), not tracked here, but registered declaratively:
+
+```sh
+~/.dotfiles/gemini/mcp-setup.sh   # registers all servers, idempotent
+gemini mcp list                   # verify
+```
+
+Differences vs the Claude version:
+- `gemini mcp` has no `add-json`, so each server is added with shell-style
+  `--header`, `-e KEY=value`, and positional `<name> <commandOrUrl> [args...]`.
+- Default `--scope` is `project`; we always pass `--scope user`.
 
 ## What is NOT tracked
 
