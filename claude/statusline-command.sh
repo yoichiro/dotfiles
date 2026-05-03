@@ -8,6 +8,45 @@
 
 input=$(cat)
 
+# Shrink each path segment to its first few characters, preserving leading
+# dots. Mirrors prompt_yoichiro_shrink_path from the zsh prezto theme.
+shrink_path() {
+  local input="$1"
+  local n="${2:-3}"
+  local leading=''
+  if [[ "$input" == /* ]]; then
+    leading='/'
+    input="${input#/}"
+  fi
+  if [ -z "$input" ]; then
+    printf '%s' "$leading"
+    return
+  fi
+  local -a segs out
+  IFS='/' read -r -a segs <<< "$input"
+  local seg dots rest
+  for seg in "${segs[@]}"; do
+    if [[ "$seg" =~ ^(\.*)(.*)$ ]]; then
+      dots="${BASH_REMATCH[1]}"
+      rest="${BASH_REMATCH[2]}"
+    else
+      dots=""
+      rest="$seg"
+    fi
+    if [ ${#rest} -gt "$n" ]; then
+      out+=("${dots}${rest:0:$n}")
+    else
+      out+=("$seg")
+    fi
+  done
+  local joined
+  local IFS_save="$IFS"
+  IFS='/'
+  joined="${out[*]}"
+  IFS="$IFS_save"
+  printf '%s%s' "$leading" "$joined"
+}
+
 cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
 model=$(echo "$input" | jq -r '.model.display_name // empty')
 used=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
@@ -22,6 +61,7 @@ git_root=$(git -C "$cwd" -c core.fsmonitor=false rev-parse --show-toplevel 2>/de
 if [ -n "$git_root" ]; then
   repo_parent="${git_root%/*}"
   parent_tilde="${repo_parent/#$HOME_DIR/"~"}"
+  parent_tilde="$(shrink_path "$parent_tilde")"
   repo_name="${git_root##*/}"
   inside_repo="${cwd#$git_root}"
   sep="/"
@@ -35,7 +75,7 @@ else
     # Root or home itself
     path_str="$pwd_tilde"
   else
-    parent_prefix="${parent}"
+    parent_prefix="$(shrink_path "$parent")"
     [ "$parent_prefix" != "/" ] && parent_prefix="${parent_prefix}/"
     path_str="\033[2m${parent_prefix}\033[0m${leaf}"
   fi
