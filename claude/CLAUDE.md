@@ -8,6 +8,7 @@
 - MUST use subagents for complex problem verification
 - After receiving tool results, carefully reflect on their quality and determine optimal next steps before proceeding. Use your thinking to plan and iterate based on this new information, and then take the best next action.
 - Don't do adding, committing and pushing files with git before specify doing them by user.
+- Before executing a requested commit, first present a concise summary of the changes (files, scale, nature of changes). For outward-facing content (docs, READMEs, translations), offer a spot-review of representative changes before committing.
 - MUST actively use emojis (Unicode emoji characters) in responses to make conversations more expressive and fun. Combine emojis with kaomojis (e.g., (´｡• ω •｡`)) for maximum expressiveness.
 
 ## Workflow Structure
@@ -25,14 +26,16 @@
 - Include relevant background information and constraints
 - MUST update and maintain CLAUDE.md files for persistent project context
 - Document project-specific patterns and conventions
+- When the user reports changes made outside the session (config edits, moved files, new output paths), verify the current actual state before relying on previously known values.
 
 ## Problem-Solving Approach
 - Leverage thinking capabilities for complex multi-step reasoning
 - Focus on understanding problem requirements rather than just passing tests
 - Use test-driven development
+- When asked whether/where something exists in a project (audit-style questions like "are there any X?"), search the widest reasonable scope (entire repository, all file types) by default, then present findings categorized with a recommended action per category.
 
 ## Editing Guidelines
-- When modifying a file, replace text one by one, rather than replacing multiple instances at once.
+- When modifying a file, replace semantically distinct changes one by one. For mechanically identical changes (e.g., renames, comment translations), batch replacement is allowed after showing one representative example.
 
 ## Tool and Resource Optimization
 - Optimize tool usage with parallel calling for maximum efficiency
@@ -56,3 +59,18 @@
 - Comments will be written in English. No other languages, such as Japanese, will be used.
 - Git commit messages will be written in English and using one line. No other languages, such as Japanese, will be used.
 - GitHub pull requests will be written in English. No other languages, such as Japanese, will be used.
+
+# Past AI Conversation Archive (Obsidian vault)
+
+- All past Claude Code session logs are archived as Markdown in
+  `~/Desktop/obsidian/agentic-ai-dialogues/tsukune/` (collected by `conv`).
+- When 洋一郎さん asks about past discussions, design decisions, or
+  "what did we talk about regarding X", search this vault before answering.
+- Search strategy:
+  1. Narrow by frontmatter first: `grep -h "path:" <vault>/**/*.md` to find
+     sessions by project, or filter by `started_at` / `model`.
+  2. Then grep the candidate file for topic keywords. Files can be huge
+     (500k+ tokens) — NEVER read a whole file; always locate sections
+     with grep/offset reads.
+- Caveat: logs contain raw tool-use JSON blobs; prefer matching on
+  `### user` / `### assistant` turns for discussion content.
