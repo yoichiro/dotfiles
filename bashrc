@@ -121,3 +121,7 @@ export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 . "$HOME/.local/bin/env"
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/yoichiro/.local/bin:$PATH"

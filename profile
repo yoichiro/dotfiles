@@ -27,3 +27,7 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 . "$HOME/.local/bin/env"
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/yoichiro/.local/bin:$PATH"

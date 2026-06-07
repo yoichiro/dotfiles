@@ -30,3 +30,7 @@ eval "$(direnv hook zsh)"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
 eval "$(uv generate-shell-completion zsh)"
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/yoichiro/.local/bin:$PATH"

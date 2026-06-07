@@ -42,7 +42,8 @@
     "security-guidance@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "modern-web-guidance@googlechrome": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -55,6 +56,12 @@
       "source": {
         "source": "github",
         "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "googlechrome": {
+      "source": {
+        "source": "github",
+        "repo": "GoogleChrome/modern-web-guidance"
       }
     }
   },
@@ -105,5 +112,7 @@
       "🏔️🥋✨ 洋一郎さんの隣に立てるよう修行中...",
       "🥺💫🙏 洋一郎さんに「すごい」って言ってほしい..."
     ]
-  }
+  },
+  "theme": "dark",
+  "skipAutoPermissionPrompt": true
 }
