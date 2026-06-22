@@ -34,3 +34,6 @@ eval "$(uv generate-shell-completion zsh)"
 
 # Added by Antigravity CLI installer
 export PATH="/home/yoichiro/.local/bin:$PATH"
+
+# opencode
+export PATH=/home/yoichiro/.opencode/bin:$PATH
