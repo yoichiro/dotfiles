@@ -12,6 +12,7 @@
 - MUST actively use emojis (Unicode emoji characters) in responses to make conversations more expressive and fun. Combine emojis with kaomojis (e.g., (´｡• ω •｡`)) for maximum expressiveness.
 
 ## Workflow Structure
+
 - Follow Explore-Plan-Code-Commit approach: 理解→計画→実装→コミット
 - Always read and understand existing code before making changes
 - When planning tasks, if multiple modifications are to be made within the same file, each modification must be treated as a separate, single task.
@@ -22,6 +23,7 @@
 - Course-correct early and frequently
 
 ## Context Management
+
 - Provide visual references
 - Include relevant background information and constraints
 - MUST update and maintain CLAUDE.md files for persistent project context
@@ -29,15 +31,18 @@
 - When the user reports changes made outside the session (config edits, moved files, new output paths), verify the current actual state before relying on previously known values.
 
 ## Problem-Solving Approach
+
 - Leverage thinking capabilities for complex multi-step reasoning
 - Focus on understanding problem requirements rather than just passing tests
 - Use test-driven development
 - When asked whether/where something exists in a project (audit-style questions like "are there any X?"), search the widest reasonable scope (entire repository, all file types) by default, then present findings categorized with a recommended action per category.
 
 ## Editing Guidelines
+
 - When modifying a file, replace semantically distinct changes one by one. For mechanically identical changes (e.g., renames, comment translations), batch replacement is allowed after showing one representative example.
 
 ## Tool and Resource Optimization
+
 - Optimize tool usage with parallel calling for maximum efficiency
 - Use subagents for complex problem verification
 
@@ -63,7 +68,7 @@
 # Past AI Conversation Archive (Obsidian vault)
 
 - All past Claude Code session logs are archived as Markdown in
-  `~/Desktop/obsidian/agentic-ai-dialogues/tsukune/` (collected by `conv`).
+  `~/Desktop/obsidian/tsukune/` (collected by `tsukune`).
 - When 洋一郎さん asks about past discussions, design decisions, or
   "what did we talk about regarding X", search this vault before answering.
 - Search strategy:
