@@ -64,9 +64,6 @@ add google-developer-knowledge "$(jq -n \
   --arg key "$MCP_GDK_API_KEY" \
   '{type:"http", url:"https://developerknowledge.googleapis.com/mcp", headers:{"X-Goog-Api-Key":$key}}')"
 
-add mastra "$(jq -n \
-  '{type:"stdio", command:"npx", args:["-y","@mastra/mcp-docs-server@latest"], env:{}}')"
-
 add stitch "$(jq -n \
   --arg key "$STITCH_API_KEY" \
   '{type:"http", url:"https://stitch.googleapis.com/mcp", headers: {"X-Goog-Api-Key":$key}}')"
