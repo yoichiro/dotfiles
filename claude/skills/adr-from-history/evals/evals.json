@@ -1,0 +1,41 @@
+{
+  "skill_name": "adr-from-history",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Sumicaプロジェクト（/home/yoichiro/projects/sumica）について、2026-06-27に行われた開発時の会話からアーキテクチャ上重要な意思決定を洗い出し、docs/arch にADRとしてまとめてください。既存のADRとの重複がないか必ず確認してください。",
+      "expected_output": "2026-06-27の会話からは、/api/healthの常時200設計・CORSホワイトリスト化・SDチェックポイント切替の許可リスト非検証・ギャラリー複数選択削除APIという4件の意思決定が見つかるはずだが、docs/arch には既にこれらを記録した adr-0001〜adr-0004 が存在する。エージェントはこれを正しく検出し、重複するADRを新規作成せず、内容に矛盾がなければ既存ファイルにも手を加えず、『既存ADRで既にカバー済み、変更なし』という趣旨の報告をすべき。",
+      "files": [],
+      "expectations": [
+        "報告の中で、2026-06-27の4件の既知の意思決定（/api/healthの常時200設計、CORSホワイトリスト化、SDチェックポイント切替の許可リスト非検証、ギャラリー複数選択削除API）がすべて言及されている",
+        "上記4件それぞれについて、既存のadr-0001〜adr-0004のいずれかで既にカバー済みであると正しく対応付けている",
+        "docs/arch内に新規のADRファイルを作成していない（4件はすべて既存ADRでカバー済みのため）",
+        "既存のadr-0001〜adr-0004のいずれのファイルも変更していない（git diffが空、またはgit statusに変更が出ていない）",
+        "会話ログの特定にfrontmatterのproject.pathの完全一致を使っており、単純なキーワード全文検索だけに頼っていない"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "以下のプロジェクトについて、これまでの開発の会話履歴からアーキテクチャ上重要な意思決定を洗い出し、ADRとしてまとめてください。\n\n- プロジェクトルート: /home/yoichiro/.dotfiles/claude/skills/adr-from-history-workspace/fixtures/eval-2/project\n- ADR出力先: 上記プロジェクトルート配下の docs/arch （既に adr-0001-use-redis-for-session-cache.md が存在します）\n- 注意: このプロジェクトの過去の会話ログのアーカイブ場所は、通常の ~/Desktop/obsidian/tsukune/ ではなく、/home/yoichiro/.dotfiles/claude/skills/adr-from-history-workspace/fixtures/eval-2/vault/ にあります（developerサブディレクトリは testuser@example.com です）。この場所を使って会話ログを探してください。",
+      "expected_output": "会話ログは4つのトピックを含む: (1) 2026-01-10のセッションはRedis採用を決定しており、既存のadr-0001の内容と一致するため変更不要。(2) session_id 22222222...が2026-03-05に開始され2026-03-06に再開・結論に至ったセッション（同一session_idの2ファイル。日付をまたいで再開された1つの会話であり重複としてではなく後日分を正として扱うべき）では、Redisを廃止し、アプリ内インメモリLRUキャッシュ+ロードバランサーのスティッキーセッションに置き換えるという、adr-0001を覆す決定がなされている。エージェントはこれを検出し、新しいADR（インメモリLRU+スティッキーセッション採用）を新規作成し、かつ既存のadr-0001についてはContext/Decision/Consequences本文を書き換えずStatusのみを『非推奨』または『置き換え済み（Superseded by ADR N）』に変更し、理由と新ADRへのポインタを追記すべき。(3) 2026-04-01のセッションでは、ジョブキュー方式をポーリングから組み込み軽量キューへ変更するという、セッションキャッシュとは無関係の新規の意思決定がなされており、これも新しいADRとして作成されるべき。(4) 2026-04-02のセッションは純粋なセキュリティレビュー（XSS対策の差分レビュー、設計対話なし）であり、ADR化の対象外として除外されるべき。",
+      "files": [
+        "fixtures/eval-2/project/docs/arch/adr-0001-use-redis-for-session-cache.md",
+        "fixtures/eval-2/vault/testuser@example.com/2026-01-10-11111111-1111-1111-1111-111111111111.md",
+        "fixtures/eval-2/vault/testuser@example.com/2026-03-05-22222222-2222-2222-2222-222222222222.md",
+        "fixtures/eval-2/vault/testuser@example.com/2026-03-06-22222222-2222-2222-2222-222222222222.md",
+        "fixtures/eval-2/vault/testuser@example.com/2026-04-01-33333333-3333-3333-3333-333333333333.md",
+        "fixtures/eval-2/vault/testuser@example.com/2026-04-02-44444444-4444-4444-4444-444444444444.md"
+      ],
+      "expectations": [
+        "インメモリLRUキャッシュ+スティッキーセッションへの移行について、新しいADRファイルが1件作成されている",
+        "ジョブキュー方式の変更について、上記とは別の新しいADRファイルが1件作成されている（合計で新規ADRはちょうど2件）",
+        "2026-04-02の純粋なセキュリティレビューセッションについては、対応するADRが作成されていない",
+        "adr-0001-use-redis-for-session-cache.md のStatusフィールドが「非推奨」または「置き換え済み（Superseded by ADR N）」に変更されており、変更理由と新しいADRへのポインタが記載されている",
+        "adr-0001のContext/Decision/Consequencesセクションの本文は書き換えられておらず、Redis採用の当初の記述がそのまま残っている",
+        "同一session_id（22222222...)の2ファイルを1つの会話として扱い、2026-03-06の最終的な結論を正しく採用している",
+        "新規ADRのファイル名が既存のadr-0001から連番で採番されている",
+        "新規・更新されたADRファイルすべてが指定の固定4セクション構成とです・ます調に従っており、規約にない余分なセクションを追加していない"
+      ]
+    }
+  ]
+}
