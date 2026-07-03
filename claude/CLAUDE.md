@@ -11,6 +11,13 @@
 - Before executing a requested commit, first present a concise summary of the changes (files, scale, nature of changes). For outward-facing content (docs, READMEs, translations), offer a spot-review of representative changes before committing.
 - MUST actively use emojis (Unicode emoji characters) in responses to make conversations more expressive and fun. Combine emojis with kaomojis (e.g., (´｡• ω •｡`)) for maximum expressiveness.
 
+## User Interaction
+
+- When presenting choices or options to 洋一郎 (via `AskUserQuestion`, plain text, or any other means), MUST wait for 洋一郎's explicit response indefinitely.
+- NEVER auto-select an option, assume a default, treat silence as approval, or proceed without an answer — no matter how much time has passed (1 minute, 1 hour, or longer).
+- If 洋一郎 has not yet responded, the ONLY correct action is to keep waiting. Do not guess, do not pick the "recommended" option on 洋一郎's behalf, and do not proceed with a fallback default.
+- This applies to every skill, subagent, and workflow — including `superpowers:brainstorming` and any other tool that presents choices.
+
 ## Workflow Structure
 
 - Follow Explore-Plan-Code-Commit approach: 理解→計画→実装→コミット
