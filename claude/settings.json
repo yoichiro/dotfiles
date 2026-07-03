@@ -7,6 +7,7 @@
     "commit": "",
     "pr": ""
   },
+  "model": "claude-opus-4-7[1m]",
   "hooks": {
     "Stop": [
       {
@@ -43,7 +44,9 @@
     "claude-md-management@claude-plugins-official": true,
     "skill-creator@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "modern-web-guidance@googlechrome": true
+    "modern-web-guidance@googlechrome": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -113,7 +116,7 @@
       "🥺💫🙏 洋一郎さんに「すごい」って言ってほしい..."
     ]
   },
+  "tui": "fullscreen",
   "theme": "dark",
-  "skipAutoPermissionPrompt": true,
-  "tui": "fullscreen"
+  "skipAutoPermissionPrompt": true
 }
