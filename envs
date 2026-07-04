@@ -7,6 +7,11 @@ export NODE_OPTIONS="--max-old-space-size=16384"
 # Required by sdkman-init.sh (sourced from zshrc).
 export SDKMAN_DIR="$HOME/.sdkman"
 
+# Disable mouse click handling in Claude Code's fullscreen TUI while keeping
+# wheel scrolling. Prevents an accidental refocus click on a permission
+# prompt from being read as a selection. Requires Claude Code v2.1.195+.
+export CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1
+
 # Load machine-specific environment overrides (including secrets).
 # Not tracked by git. Keep chmod 600 when it contains secrets.
 [ -f "$HOME/.envs.local" ] && source "$HOME/.envs.local"
