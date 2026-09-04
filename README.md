@@ -9,7 +9,9 @@ up by the `zpreztorc` shipped here.
 
 The Claude Code config under `claude/` assumes [Claude Code](https://claude.com/claude-code)
 is installed and that its config root is `~/.claude/`. The `notify-windows.sh`
-hook is WSL2-specific (calls Windows PowerShell at a hardcoded path).
+hook is WSL2-specific (calls Windows PowerShell at a hardcoded path). A native
+Windows 11 port of just the Claude Code layer lives under `claude/windows/` —
+see [Windows 11 support (Claude Code only)](#windows-11-support-claude-code-only).
 
 The Gemini CLI config under `gemini/` assumes [Gemini CLI](https://github.com/google-gemini/gemini-cli)
 is installed and its config root is `~/.gemini/`. Note: `~/.gemini/` also
@@ -45,6 +47,11 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 | `claude/skills/<name>/` | `~/.claude/skills/<name>/` | Self-authored Claude Code skills (whole-directory symlink). Currently: `design-doc-writer`, `drawio` |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
+| `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json`, but with `pwsh -File …` commands and Windows paths |
+| `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
+| `claude/windows/statusline.ps1` | `~/.claude/statusline.ps1` (Windows) | PowerShell status line (mirrors `claude/statusline-command.sh`) |
+| `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
+| `claude/windows/install.ps1` | _(executed manually)_ | Windows installer: creates the `~/.claude/…` symlinks for the Claude Code layer only |
 | `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI global instructions (persona, principles) |
 | `gemini/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers for Gemini CLI via `gemini mcp add`. Tokens read from `~/.envs.local`. Idempotent. |
 
@@ -102,6 +109,26 @@ cp ~/.dotfiles/envs.local.example ~/.envs.local
 chmod 600 ~/.envs.local   # if it will contain secrets
 $EDITOR ~/.paths.local ~/.envs.local
 ```
+
+## Windows 11 support (Claude Code only)
+
+The shell layer (`zshrc`, `zprezto/`, `aliases`, `paths`, `envs`, …) is Unix
+only. Only the Claude Code slice has a native Windows 11 port, under
+`claude/windows/`. Shared, cross-platform pieces (`claude/CLAUDE.md`,
+`claude/commands/`, `claude/skills/`) are linked from both installers.
+
+```powershell
+# One-time on a Windows 11 machine (Developer Mode ON, PowerShell 7 installed):
+git clone <repo-url> $HOME\.dotfiles
+pwsh -File $HOME\.dotfiles\claude\windows\install.ps1 -DryRun   # preview
+pwsh -File $HOME\.dotfiles\claude\windows\install.ps1           # apply
+pwsh -File $HOME\.dotfiles\claude\windows\mcp-setup.ps1         # optional: MCP
+```
+
+Full prerequisites, `.envs.local.ps1` template, and per-file mapping live in
+[`claude/windows/README.md`](claude/windows/README.md). WSL2 users should keep
+using the Unix `install.sh` — the Windows port is only for running Claude Code
+directly against `pwsh` on the Windows host.
 
 ## Claude Code MCP servers
 
