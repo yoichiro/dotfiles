@@ -13,8 +13,29 @@ param()
 
 $ErrorActionPreference = 'SilentlyContinue'
 
-# Ensure emoji / non-ASCII output survives the pipeline.
-[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+# Optional file-based debug logging. Enable by setting the env var
+# CLAUDE_STATUSLINE_LOG=<path>. Every phase logs a timestamped line so we can
+# tell whether Claude Code even invoked the script, what it sent on stdin,
+# and what we returned.
+$script:DebugLogPath = $env:CLAUDE_STATUSLINE_LOG
+function Write-DebugLog {
+    param([string]$Message)
+    if (-not $script:DebugLogPath) { return }
+    try {
+        "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss.fff')] $Message" |
+            Out-File -FilePath $script:DebugLogPath -Append -Encoding utf8
+    } catch { }
+}
+
+Write-DebugLog "=== invoked (PID $PID, PS $($PSVersionTable.PSVersion) $($PSVersionTable.PSEdition)) ==="
+
+# Ensure emoji / non-ASCII output survives the pipeline. Wrapped so a rare
+# "encoding already fixed" failure never prevents the rest of the script.
+try {
+    [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+} catch {
+    Write-DebugLog "OutputEncoding set failed: $($_.Exception.Message)"
+}
 
 $ESC   = [char]27
 $RESET = "$ESC[0m"
@@ -55,10 +76,17 @@ function Shrink-Path {
 }
 
 # Read hook payload from stdin.
+Write-DebugLog "reading stdin..."
 $rawInput = [Console]::In.ReadToEnd()
+Write-DebugLog "stdin read: $($rawInput.Length) bytes"
+if ($script:DebugLogPath -and $rawInput.Length -gt 0) {
+    Write-DebugLog "stdin content: $rawInput"
+}
 try {
     $payload = $rawInput | ConvertFrom-Json -ErrorAction Stop
+    Write-DebugLog "JSON parsed OK"
 } catch {
+    Write-DebugLog "JSON parse failed: $($_.Exception.Message)"
     $payload = [pscustomobject]@{}
 }
 
@@ -191,6 +219,18 @@ $line = "$primaryColor$seasonSymbol$RESET $hourSymbol $secondaryColor$pathStr$RE
 if ($gitBranch) { $line += $gitInfo }
 if ($model)     { $line += "  $ESC[2m$model$ctxStr$RESET" }
 
+Write-DebugLog "output line length: $($line.Length)"
+Write-DebugLog "output (with ANSI stripped): $($line -replace [regex]::Escape([string][char]27) + '\[[0-9;]*m', '')"
+
 # Bypass PowerShell's output streams so ANSI escapes reach Claude Code's
 # stdout capture unmodified (Write-Host / Write-Output may strip them).
-[Console]::Out.WriteLine($line)
+try {
+    [Console]::Out.WriteLine($line)
+    [Console]::Out.Flush()
+    Write-DebugLog "wrote and flushed to stdout OK"
+} catch {
+    Write-DebugLog "Console.Out.WriteLine failed: $($_.Exception.Message)"
+    # Fallback path so the status line never appears blank.
+    Write-Output $line
+}
+Write-DebugLog "=== done ==="
