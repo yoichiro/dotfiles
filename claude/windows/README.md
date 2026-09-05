@@ -9,9 +9,8 @@ ported — see the root `README.md` for the reasoning. Only Claude Code's own
 
 | File | Windows target | Purpose |
 |---|---|---|
-| `settings.json` | `~/.claude/settings.json` | Same shape as the Unix `claude/settings.json`, but hook and statusline commands invoke `pwsh -File …` with Windows paths. |
+| `settings.json` | `~/.claude/settings.json` | Same shape as the Unix `claude/settings.json`, minus the `statusLine` section (see below). Hook command invokes `pwsh -File …` with Windows paths. |
 | `notify.ps1` | `~/.claude/notify.ps1` | Stop / Notification hook — Windows toast via the [BurntToast](https://github.com/Windos/BurntToast) module. Pure PowerShell (no WSL round-trip). |
-| `statusline.ps1` | `~/.claude/statusline.ps1` | Status line: same seasonal / hourly / git-aware theme as `claude/statusline-command.sh`. |
 | `mcp-setup.ps1` | _(run manually)_ | Registers all user-scoped MCP servers. Reads tokens from `~/.envs.local.ps1`. |
 | `install.ps1` | _(run once)_ | Creates the symlinks from `~/.claude/…` into this repo. |
 
@@ -26,8 +25,8 @@ Windows installer just links to the same files.
    `settings.json` calls `pwsh`, not the legacy `powershell.exe`.
 3. **Developer Mode ON** — Settings → *Privacy & security* → *For developers*.
    Without this, `New-Item -ItemType SymbolicLink` needs an elevated shell.
-4. **Git for Windows** — needed by `statusline.ps1` for the git-aware path
-   display.
+4. **Git for Windows** — used by MCP `github` server bootstrap and general
+   Git tooling.
 5. **[BurntToast](https://github.com/Windos/BurntToast) PowerShell module** —
    used by `notify.ps1`. PowerShell 7 has no built-in WinRT projection, so
    the direct `Windows.UI.Notifications` API is unavailable; BurntToast is
@@ -91,10 +90,32 @@ icacls $HOME\.envs.local.ps1 /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
 |---|---|---|
 | Notification transport | `bash` → `powershell.exe /mnt/c/...` from WSL | Native PowerShell via BurntToast (no round-trip) |
 | JSON parsing | `jq` | `ConvertFrom-Json` |
-| Status line colors | `\033[…m` via `printf` | Same ANSI, emitted from `[char]27 + '[…m'` |
+| Status line | Custom seasonal/hourly/git-aware theme via `bash`+`jq` | **Claude Code's built-in default** (see below) |
 | Hook path in `settings.json` | `/home/yoichiro/.claude/hooks/notify-windows.sh` | `pwsh -NoProfile -NonInteractive -File C:\Users\yoichiro\.claude\notify.ps1` |
 | Symlink creation | `ln -s` | `New-Item -ItemType SymbolicLink` (needs Developer Mode) |
 | Env file | `~/.envs.local` (bash `export`) | `~/.envs.local.ps1` (PowerShell `$env:…`) |
+
+## Why no custom status line on Windows
+
+The Unix version's rich status line (season/hour emoji, git-aware colored
+path, dirty indicator, model + context %) is intentionally **not** ported.
+Extensive experimentation (Claude Code `2.1.261`) turned up hard limitations
+in how Windows Claude Code launches `statusLine.command`:
+
+- **Sub-second timeout** — even `powershell.exe` cold start (~150 ms) plus
+  script parsing exceeds it; `pwsh` (7.x) cold start is even worse.
+- **Command parser strips quoted arguments** — `cmd /c "…"`, quoted paths,
+  and paths containing spaces are silently mangled before reaching the shell.
+- **`.cmd` / `.bat` files aren't launched** — even via `cmd /c file.cmd`.
+- **`bash` invocations (both WSL `bash.exe` and Git-for-Windows `bash.exe`)
+  are silently ignored**, even though the same commands work fine when run
+  manually from PowerShell.
+
+Only bare native `.exe` invocations with unquoted, space-separated arguments
+(e.g. `git branch --show-current`) reliably reach the display. That subset is
+too thin to reproduce anything approaching the Unix experience, so Windows
+falls back to Claude Code's built-in default status line. `/status` inside
+Claude Code still surfaces model / project info interactively.
 
 ## Not ported (out of scope)
 
@@ -102,5 +123,5 @@ icacls $HOME\.envs.local.ps1 /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
   `gitconfig`, `vimrc`, `gemini/`. Shell UX on Windows is expected to be set
   up separately (PowerShell profile + `oh-my-posh` / Starship, if desired).
 - `claude/hooks/notify-windows.sh` — replaced by `notify.ps1` here.
-- `claude/statusline-command.sh` — replaced by `statusline.ps1` here.
+- `claude/statusline-command.sh` — not ported (see above).
 - `claude/mcp-setup.sh` — replaced by `mcp-setup.ps1` here.

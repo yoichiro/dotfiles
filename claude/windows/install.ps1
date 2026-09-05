@@ -105,7 +105,6 @@ $fileLinks = @(
     @{ Source = (Join-Path $claudeDir  'CLAUDE.md');            Dest = (Join-Path $HOME '.claude\CLAUDE.md') }
     @{ Source = (Join-Path $windowsDir 'settings.json');        Dest = (Join-Path $HOME '.claude\settings.json') }
     @{ Source = (Join-Path $windowsDir 'notify.ps1');           Dest = (Join-Path $HOME '.claude\notify.ps1') }
-    @{ Source = (Join-Path $windowsDir 'statusline.ps1');       Dest = (Join-Path $HOME '.claude\statusline.ps1') }
     @{ Source = (Join-Path $claudeDir  'commands\back-to-main.md'); Dest = (Join-Path $HOME '.claude\commands\back-to-main.md') }
 )
 foreach ($entry in $fileLinks) {

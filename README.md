@@ -47,9 +47,8 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 | `claude/skills/<name>/` | `~/.claude/skills/<name>/` | Self-authored Claude Code skills (whole-directory symlink). Currently: `design-doc-writer`, `drawio` |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
-| `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json`, but with `pwsh -File …` commands and Windows paths |
+| `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
 | `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
-| `claude/windows/statusline.ps1` | `~/.claude/statusline.ps1` (Windows) | PowerShell status line (mirrors `claude/statusline-command.sh`) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
 | `claude/windows/install.ps1` | _(executed manually)_ | Windows installer: creates the `~/.claude/…` symlinks for the Claude Code layer only |
 | `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI global instructions (persona, principles) |

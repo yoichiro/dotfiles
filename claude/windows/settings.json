@@ -32,10 +32,6 @@
       }
     ]
   },
-  "statusLine": {
-    "type": "command",
-    "command": "pwsh -NoProfile -NonInteractive -File C:\\Users\\yoichiro\\.claude\\statusline.ps1"
-  },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
