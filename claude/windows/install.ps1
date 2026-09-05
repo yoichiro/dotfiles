@@ -100,11 +100,13 @@ function Link-Path {
 
 # Individual Claude Code files placed directly under $HOME\.claude\.
 # Layout matches settings.json's command paths (which expect notify.ps1 and
-# statusline.ps1 as siblings of CLAUDE.md — not in a hooks\ subdirectory).
+# statusline-command.ps1 as siblings of CLAUDE.md — not in a hooks\
+# subdirectory).
 $fileLinks = @(
     @{ Source = (Join-Path $claudeDir  'CLAUDE.md');            Dest = (Join-Path $HOME '.claude\CLAUDE.md') }
     @{ Source = (Join-Path $windowsDir 'settings.json');        Dest = (Join-Path $HOME '.claude\settings.json') }
     @{ Source = (Join-Path $windowsDir 'notify.ps1');           Dest = (Join-Path $HOME '.claude\notify.ps1') }
+    @{ Source = (Join-Path $windowsDir 'statusline-command.ps1'); Dest = (Join-Path $HOME '.claude\statusline-command.ps1') }
     @{ Source = (Join-Path $claudeDir  'commands\back-to-main.md'); Dest = (Join-Path $HOME '.claude\commands\back-to-main.md') }
 )
 foreach ($entry in $fileLinks) {
