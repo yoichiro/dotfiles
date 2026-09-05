@@ -114,5 +114,9 @@
   },
   "tui": "fullscreen",
   "theme": "dark",
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "statusLine": {
+    "type": "command",
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
+  }
 }
