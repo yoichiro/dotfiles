@@ -10,7 +10,7 @@ ported — see the root `README.md` for the reasoning. Only Claude Code's own
 | File | Windows target | Purpose |
 |---|---|---|
 | `settings.json` | `~/.claude/settings.json` | Same shape as the Unix `claude/settings.json`, but hook and statusline commands invoke `pwsh -File …` with Windows paths. |
-| `notify.ps1` | `~/.claude/notify.ps1` | Stop / Notification hook — Windows toast via `Windows.UI.Notifications`. Pure PowerShell (no WSL round-trip). |
+| `notify.ps1` | `~/.claude/notify.ps1` | Stop / Notification hook — Windows toast via the [BurntToast](https://github.com/Windos/BurntToast) module. Pure PowerShell (no WSL round-trip). |
 | `statusline.ps1` | `~/.claude/statusline.ps1` | Status line: same seasonal / hourly / git-aware theme as `claude/statusline-command.sh`. |
 | `mcp-setup.ps1` | _(run manually)_ | Registers all user-scoped MCP servers. Reads tokens from `~/.envs.local.ps1`. |
 | `install.ps1` | _(run once)_ | Creates the symlinks from `~/.claude/…` into this repo. |
@@ -28,9 +28,16 @@ Windows installer just links to the same files.
    Without this, `New-Item -ItemType SymbolicLink` needs an elevated shell.
 4. **Git for Windows** — needed by `statusline.ps1` for the git-aware path
    display.
-5. **[Claude Code](https://claude.com/claude-code)** installed and its config
+5. **[BurntToast](https://github.com/Windos/BurntToast) PowerShell module** —
+   used by `notify.ps1`. PowerShell 7 has no built-in WinRT projection, so
+   the direct `Windows.UI.Notifications` API is unavailable; BurntToast is
+   the community-standard workaround.
+   ```powershell
+   Install-Module -Name BurntToast -Scope CurrentUser -Force -AllowClobber
+   ```
+6. **[Claude Code](https://claude.com/claude-code)** installed and its config
    root at `%USERPROFILE%\.claude\` (the default).
-6. This repo cloned to `%USERPROFILE%\.dotfiles\` (matches the paths baked
+7. This repo cloned to `%USERPROFILE%\.dotfiles\` (matches the paths baked
    into `settings.json`).
 
 ## Setup
@@ -82,7 +89,7 @@ icacls $HOME\.envs.local.ps1 /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
 
 | Concern | Unix / WSL2 | Windows 11 |
 |---|---|---|
-| Notification transport | `bash` → `powershell.exe /mnt/c/...` from WSL | Native PowerShell, no round-trip |
+| Notification transport | `bash` → `powershell.exe /mnt/c/...` from WSL | Native PowerShell via BurntToast (no round-trip) |
 | JSON parsing | `jq` | `ConvertFrom-Json` |
 | Status line colors | `\033[…m` via `printf` | Same ANSI, emitted from `[char]27 + '[…m'` |
 | Hook path in `settings.json` | `/home/yoichiro/.claude/hooks/notify-windows.sh` | `pwsh -NoProfile -NonInteractive -File C:\Users\yoichiro\.claude\notify.ps1` |

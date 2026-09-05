@@ -1,14 +1,32 @@
-# Send Windows 11 toast notification (native PowerShell, no WSL wrapper).
+# Send Windows 11 toast notification via the BurntToast module.
 # Usage:
 #   echo '{"hook_event_name":"Stop","cwd":"C:\\Users\\yoichiro\\proj"}' | pwsh -File notify.ps1
 #
 # Registered from Claude Code settings.json under hooks.Stop and hooks.Notification:
 #   pwsh -NoProfile -File C:\Users\yoichiro\.claude\notify.ps1
+#
+# Prerequisite (one-time):
+#   Install-Module -Name BurntToast -Scope CurrentUser -Force -AllowClobber
+#
+# Why BurntToast: PowerShell 7 runs on .NET (Core) and has no built-in WinRT
+# projection, so [Windows.UI.Notifications.ToastNotificationManager, ...,
+# ContentType=WindowsRuntime] fails with "Unable to find type". BurntToast
+# ships a working toast pipeline that runs on both PS 5.1 and PS 7.
 
 [CmdletBinding()]
 param()
 
-$ErrorActionPreference = 'Stop'
+# Never let a notification failure break a Claude Code hook.
+$ErrorActionPreference = 'Continue'
+
+# Load the module. If it is missing, exit quietly so Claude Code keeps working.
+if (-not (Get-Module -ListAvailable -Name BurntToast)) {
+    exit 0
+}
+Import-Module BurntToast -ErrorAction SilentlyContinue
+if (-not (Get-Module -Name BurntToast)) {
+    exit 0
+}
 
 # Read hook payload from stdin.
 $rawInput = [Console]::In.ReadToEnd()
@@ -73,40 +91,10 @@ switch ($eventName) {
 }
 $cheer = Get-Random -InputObject $cheers
 
-# XML escape helper - toast payload is XML.
-function ConvertTo-XmlEscaped([string]$s) {
-    return $s.Replace('&','&amp;').Replace('<','&lt;').Replace('>','&gt;').Replace('"','&quot;').Replace("'",'&apos;')
-}
-
-$titleXml   = ConvertTo-XmlEscaped $title
-$messageXml = ConvertTo-XmlEscaped $message
-$cheerXml   = ConvertTo-XmlEscaped $cheer
-
-$toastXml = @"
-<toast>
-    <visual>
-        <binding template='ToastGeneric'>
-            <text>$titleXml</text>
-            <text>$messageXml</text>
-            <text>$cheerXml</text>
-        </binding>
-    </visual>
-    <audio src='ms-winsoundevent:Notification.SMS'/>
-</toast>
-"@
-
 try {
-    [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
-    [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime] | Out-Null
-
-    $xml = New-Object Windows.Data.Xml.Dom.XmlDocument
-    $xml.LoadXml($toastXml)
-
-    # Use PowerShell's own AppUserModelID so the toast attributes to a real installed app.
-    $appId = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
-    [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier($appId).Show($xml)
+    New-BurntToastNotification -Text $title, $message, $cheer -Sound 'SMS'
 } catch {
-    # Notifications are non-critical; never fail the hook.
+    # Nonfatal - never block the hook.
 }
 
 exit 0
