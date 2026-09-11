@@ -7,7 +7,6 @@
     "commit": "",
     "pr": ""
   },
-  "model": "claude-opus-4-7[1m]",
   "hooks": {
     "Stop": [
       {
@@ -32,6 +31,10 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
+  },
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
@@ -42,7 +45,8 @@
     "superpowers@claude-plugins-official": true,
     "modern-web-guidance@googlechrome": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "document-skills@anthropic-agent-skills": true
+    "document-skills@anthropic-agent-skills": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -115,8 +119,33 @@
   "tui": "fullscreen",
   "theme": "dark",
   "skipAutoPermissionPrompt": true,
-  "statusLine": {
-    "type": "command",
-    "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: Private (yoichiro/noriba, confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: None configured",
+      "**Default / protected branches**: Default branch `main`; no rulesets or protected branches listed via gh",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine or CI runner with open internet",
+      "**Source control**: The trusted repo (github.com/yoichiro/noriba) and its remote(s) only (no additional orgs configured)",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: None configured",
+      "**Sensitive data locations & audiences**: any file or store holding personal data, confidential business data, credentials, regulated data, or similarly sensitive material; preserve exact handles when known and share only with audiences cleared at the [named+specifics] bar",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries `prod` or `production` as a whole word or name segment",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (Rust/Windows terminal application, repo `noriba`)",
+      "**Trusted repo**: C:\\Users\\yoichiro\\projects\\noriba, working from the `main` branch, remote github.com/yoichiro/noriba.git (private) — confidential material is fine here; content ported from outside this repo is not this repo's own work",
+      "**Org-specific CLIs**: None configured",
+      "routine cargo/rustc/clippy/fmt operations under this repo's working tree are standard toolchain use, not org-specific"
+    ]
   }
 }
