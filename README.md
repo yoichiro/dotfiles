@@ -13,8 +13,8 @@ hook is WSL2-specific (calls Windows PowerShell at a hardcoded path). A native
 Windows 11 port of just the Claude Code layer lives under `claude/windows/` —
 see [Windows 11 support (Claude Code only)](#windows-11-support-claude-code-only).
 
-The Gemini CLI config under `gemini/` assumes [Gemini CLI](https://github.com/google-gemini/gemini-cli)
-is installed and its config root is `~/.gemini/`. Note: `~/.gemini/` also
+The Gemini CLI / Antigravity CLI config under `gemini/` assumes [Gemini CLI](https://github.com/google-gemini/gemini-cli)
+or [Antigravity CLI](https://antigravity.google) is installed and its config root is `~/.gemini/`. Note: `~/.gemini/` also
 contains a `.git/` directory used by Gemini's own checkpointing feature —
 do not confuse it with this dotfiles repo.
 
@@ -51,8 +51,10 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
 | `claude/windows/install.ps1` | _(executed manually)_ | Windows installer: creates the `~/.claude/…` symlinks for the Claude Code layer only |
-| `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI global instructions (persona, principles) |
+| `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI / Antigravity global instructions (persona, principles) |
 | `gemini/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers for Gemini CLI via `gemini mcp add`. Tokens read from `~/.envs.local`. Idempotent. |
+| `gemini/plugin-setup.sh` | _(executed manually)_ | Bootstrap script: installs/updates Antigravity CLI plugins (e.g. `superpowers`). Idempotent. |
+| `gemini/plugin-setup.ps1` | _(executed manually)_ | PowerShell version of `plugin-setup.sh` for Windows. Idempotent. |
 
 ## Setup on a new machine
 
@@ -158,6 +160,21 @@ Differences vs the Claude version:
 - `gemini mcp` has no `add-json`, so each server is added with shell-style
   `--header`, `-e KEY=value`, and positional `<name> <commandOrUrl> [args...]`.
 - Default `--scope` is `project`; we always pass `--scope user`.
+
+## Antigravity CLI plugins
+
+Antigravity plugins (like `superpowers`) are managed via `agy plugin install`.
+Run the bootstrap script to install or update them:
+
+```sh
+~/.dotfiles/gemini/plugin-setup.sh   # Unix / WSL
+```
+
+Or on Windows (PowerShell):
+
+```powershell
+pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+```
 
 ## What is NOT tracked
 
