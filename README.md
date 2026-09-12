@@ -55,6 +55,10 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `gemini/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers for Gemini CLI via `gemini mcp add`. Tokens read from `~/.envs.local`. Idempotent. |
 | `gemini/plugin-setup.sh` | _(executed manually)_ | Bootstrap script: installs/updates Antigravity CLI plugins (e.g. `superpowers`). Idempotent. |
 | `gemini/plugin-setup.ps1` | _(executed manually)_ | PowerShell version of `plugin-setup.sh` for Windows. Idempotent. |
+| `gemini/statusline-command.sh` | `~/.gemini/antigravity-cli/statusline-command.sh` | Antigravity CLI status line script for Unix / WSL (seasonal theme) |
+| `gemini/statusline-command.ps1` | `~/.gemini/antigravity-cli/statusline-command.ps1` | Antigravity CLI status line script for Windows (PowerShell prompt style) |
+| `gemini/statusline-setup.sh` | _(executed manually)_ | Bootstrap script: symlinks `statusline-command.sh` and updates `statusLine` in `~/.gemini/antigravity-cli/settings.json`. Idempotent. |
+| `gemini/statusline-setup.ps1` | _(executed manually)_ | PowerShell version of `statusline-setup.sh` for Windows. Idempotent. |
 
 ## Setup on a new machine
 
@@ -174,6 +178,24 @@ Or on Windows (PowerShell):
 
 ```powershell
 pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+```
+
+## Antigravity CLI statusLine
+
+Antigravity CLI supports custom status lines by executing an external command
+configured in `~/.gemini/antigravity-cli/settings.json`. The dotfiles repo
+provides scripts mirroring the Claude Code status line styles.
+
+Run the bootstrap script to create the symlink and register the configuration:
+
+```sh
+~/.dotfiles/gemini/statusline-setup.sh   # Unix / WSL
+```
+
+Or on Windows (PowerShell):
+
+```powershell
+pwsh -File $HOME\.dotfiles\gemini\statusline-setup.ps1
 ```
 
 ## What is NOT tracked

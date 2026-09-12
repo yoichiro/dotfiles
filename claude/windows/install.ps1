@@ -132,3 +132,4 @@ if ($DryRun) {
 Write-Host "Reminder: put machine-local secrets in `$HOME\.envs.local.ps1 (`$env:MCP_GITHUB_PAT = '...', ...)."
 Write-Host "Then:     pwsh -File `"$windowsDir\mcp-setup.ps1`"    # to register Claude Code MCP servers"
 Write-Host "          pwsh -File `"$dotfilesDir\gemini\plugin-setup.ps1`" # to install Antigravity CLI plugins"
+Write-Host "          pwsh -File `"$dotfilesDir\gemini\statusline-setup.ps1`" # to configure Antigravity CLI statusLine"

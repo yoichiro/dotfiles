@@ -1,0 +1,155 @@
+#!/bin/bash
+# Status line command for Antigravity CLI (Unix / WSL)
+# Mirrors the zprezto 'yoichiro' seasonal theme:
+#   Spring (Mar-May):  🌸  magenta / green
+#   Summer (Jun-Aug):  🌻  yellow  / cyan
+#   Autumn (Sep-Nov):  🍁  red     / yellow
+#   Winter (Dec-Feb):  ❄️   blue    / white
+
+input=$(cat)
+
+# Shrink each path segment to its first few characters, preserving leading
+# dots. Mirrors prompt_yoichiro_shrink_path from the zsh prezto theme.
+shrink_path() {
+  local input="$1"
+  local n="${2:-3}"
+  local leading=''
+  if [[ "$input" == /* ]]; then
+    leading='/'
+    input="${input#/}"
+  fi
+  if [ -z "$input" ]; then
+    printf '%s' "$leading"
+    return
+  fi
+  local -a segs out
+  IFS='/' read -r -a segs <<< "$input"
+  local seg dots rest
+  for seg in "${segs[@]}"; do
+    if [[ "$seg" =~ ^(\.*)(.*)$ ]]; then
+      dots="${BASH_REMATCH[1]}"
+      rest="${BASH_REMATCH[2]}"
+    else
+      dots=""
+      rest="$seg"
+    fi
+    if [ ${#rest} -gt "$n" ]; then
+      out+=("${dots}${rest:0:$n}")
+    else
+      out+=("$seg")
+    fi
+  done
+  local joined
+  local IFS_save="$IFS"
+  IFS='/'
+  joined="${out[*]}"
+  IFS="$IFS_save"
+  printf '%s%s' "$leading" "$joined"
+}
+
+cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // .workspace.project_dir // empty' 2>/dev/null)
+[ -z "$cwd" ] && cwd="$(pwd)"
+model=$(echo "$input" | jq -r '.model.display_name // .model.name // empty' 2>/dev/null)
+used=$(echo "$input" | jq -r '.context_window.used_percentage // .context.used_percentage // empty' 2>/dev/null)
+
+HOME_DIR="$HOME"
+pwd_tilde="${cwd/#$HOME_DIR/"~"}"
+
+git_root=$(git -C "$cwd" -c core.fsmonitor=false rev-parse --show-toplevel 2>/dev/null)
+if [ -n "$git_root" ]; then
+  repo_parent="${git_root%/*}"
+  parent_tilde="${repo_parent/#$HOME_DIR/"~"}"
+  parent_tilde="$(shrink_path "$parent_tilde")"
+  repo_name="${git_root##*/}"
+  inside_repo="${cwd#$git_root}"
+  sep="/"
+  [ "$parent_tilde" = "/" ] && sep=""
+  path_str="\033[2m${parent_tilde}${sep}\033[0m\033[1m${repo_name}\033[0m${inside_repo}"
+else
+  parent="${pwd_tilde%/*}"
+  leaf="${pwd_tilde##*/}"
+  if [ "$parent" = "$pwd_tilde" ]; then
+    path_str="$pwd_tilde"
+  else
+    parent_prefix="$(shrink_path "$parent")"
+    [ "$parent_prefix" != "/" ] && parent_prefix="${parent_prefix}/"
+    path_str="\033[2m${parent_prefix}\033[0m${leaf}"
+  fi
+fi
+
+# Pick season based on current month
+month=$(date +%m)
+case "$month" in
+  03|04|05)
+    season_symbol='🌸'
+    season_branch='🌿'
+    season_clean='✨'
+    primary_color='\033[35m'
+    secondary_color='\033[32m'
+    ;;
+  06|07|08)
+    season_symbol='🌻'
+    season_branch='🌴'
+    season_clean='☀️'
+    primary_color='\033[33m'
+    secondary_color='\033[36m'
+    ;;
+  09|10|11)
+    season_symbol='🍁'
+    season_branch='🍂'
+    season_clean='🌰'
+    primary_color='\033[31m'
+    secondary_color='\033[33m'
+    ;;
+  *)
+    season_symbol='❄️'
+    season_branch='⛄'
+    season_clean='🎄'
+    primary_color='\033[34m'
+    secondary_color='\033[37m'
+    ;;
+esac
+
+reset='\033[0m'
+
+hour=$(date +%-H)
+hour_symbols=(
+  '🌌' '🦉' '🌙' '💤' '🌠' '🌄'
+  '🌅' '☕' '🥐' '🌻' '🧠' '💻'
+  '🍱' '🫖' '🎨' '🍰' '📚' '🌇'
+  '🍻' '🍝' '🎮' '📺' '🛁' '🌃'
+)
+hour_symbol="${hour_symbols[$hour]}"
+
+git_branch=""
+git_info=""
+if git -C "$cwd" rev-parse --git-dir > /dev/null 2>&1; then
+  git_branch=$(git -C "$cwd" -c core.fsmonitor=false symbolic-ref --short HEAD 2>/dev/null)
+  if [ -n "$git_branch" ]; then
+    git_dirty=$(git -C "$cwd" -c core.fsmonitor=false status --porcelain 2>/dev/null)
+    if [ -n "$git_dirty" ]; then
+      git_info=" ${primary_color}${season_branch} ${git_branch}${reset} \033[31m💦${reset}"
+    else
+      git_info=" ${primary_color}${season_branch} ${git_branch}${reset} \033[33m${season_clean}${reset}"
+    fi
+  fi
+fi
+
+ctx_str=""
+if [ -n "$used" ] && [ "$used" != "null" ]; then
+  ctx_str=" $(printf '%.0f' "$used")%"
+fi
+
+printf "${primary_color}%s${reset} %s ${secondary_color}" "$season_symbol" "$hour_symbol"
+printf "%b" "${path_str}"
+printf "${reset}"
+
+if [ -n "$git_branch" ]; then
+  printf "%b" "$git_info"
+fi
+
+if [ -n "$model" ]; then
+  printf "  \033[2m%s%s${reset}" "$model" "$ctx_str"
+fi
+
+printf "\n"
