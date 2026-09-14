@@ -148,5 +148,6 @@
       "**Org-specific CLIs**: None configured",
       "routine cargo/rustc/clippy/fmt operations under this repo's working tree are standard toolchain use, not org-specific"
     ]
-  }
+  },
+  "model": "claude-opus-4-7[1m]"
 }
