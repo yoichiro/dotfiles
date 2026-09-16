@@ -105,17 +105,23 @@ for rel in "${CLAUDE_FILES[@]}"; do
   link_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
 done
 
-# Claude Code skills: link self-authored skill directories under ~/.claude/skills/
-# as whole-directory symlinks, so adding/removing files inside a skill does not
-# require re-running install.sh. Note: gws-*, firebase-* and find-skills under
-# ~/.claude/skills/ are managed elsewhere (they symlink into ~/.agents/skills/)
-# and are intentionally not handled here.
-CLAUDE_SKILLS=(
+# Shared skills: keep one source and link whole directories for each CLI,
+# including references and templates. Only manage these explicit names;
+# third-party skills in the same destination directories are managed elsewhere.
+SHARED_SKILLS=(
+  adr-from-history
   design-doc-writer
   drawio
 )
-for name in "${CLAUDE_SKILLS[@]}"; do
-  link_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
+SKILL_DIRS=(
+  .claude/skills
+  .agents/skills
+  .gemini/config/skills
+)
+for skill_dir in "${SKILL_DIRS[@]}"; do
+  for name in "${SHARED_SKILLS[@]}"; do
+    link_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/$skill_dir/$name"
+  done
 done
 
 # Gemini CLI config: link individual files under ~/.gemini/. Same pattern

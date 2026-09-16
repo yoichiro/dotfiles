@@ -156,12 +156,20 @@ for rel in "${CLAUDE_FILES[@]}"; do
   unlink_path "$DOTFILES_DIR/claude/$rel" "$HOME/.claude/$rel"
 done
 
-CLAUDE_SKILLS=(
+SHARED_SKILLS=(
+  adr-from-history
   design-doc-writer
   drawio
 )
-for name in "${CLAUDE_SKILLS[@]}"; do
-  unlink_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/.claude/skills/$name"
+SKILL_DIRS=(
+  .claude/skills
+  .agents/skills
+  .gemini/config/skills
+)
+for skill_dir in "${SKILL_DIRS[@]}"; do
+  for name in "${SHARED_SKILLS[@]}"; do
+    unlink_path "$DOTFILES_DIR/claude/skills/$name" "$HOME/$skill_dir/$name"
+  done
 done
 
 GEMINI_FILES=(
