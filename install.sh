@@ -129,6 +129,17 @@ for rel in "${GEMINI_FILES[@]}"; do
   link_path "$DOTFILES_DIR/gemini/$rel" "$HOME/.gemini/$rel"
 done
 
+# Codex CLI config: link individual files under ~/.codex/. Same pattern
+# as CLAUDE_FILES above. Other files in ~/.codex/ (config.toml, auth.json,
+# state_*.sqlite, logs_*.sqlite, ...) are runtime/state/secret data and
+# intentionally NOT managed here.
+CODEX_FILES=(
+  AGENTS.md
+)
+for rel in "${CODEX_FILES[@]}"; do
+  link_path "$DOTFILES_DIR/codex/$rel" "$HOME/.codex/$rel"
+done
+
 # zprezto runcom: take over ~/.zpreztorc with our loader, which sources the
 # upstream zpreztorc and then layers our overrides on top (zpreztorc.local).
 link_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"

@@ -18,6 +18,8 @@ or [Antigravity CLI](https://antigravity.google) is installed and its config roo
 contains a `.git/` directory used by Gemini's own checkpointing feature —
 do not confuse it with this dotfiles repo.
 
+The Codex CLI config under `codex/` assumes Codex CLI is installed and its config root is `~/.codex/`.
+
 After install, `~/.zpreztorc` becomes a symlink to `zprezto/zpreztorc.loader`
 in this repo. The loader sources the upstream `~/.zprezto/runcoms/zpreztorc`
 first, then layers our overrides from `zprezto/zpreztorc.local`. The upstream
@@ -59,6 +61,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `gemini/statusline-command.ps1` | `~/.gemini/antigravity-cli/statusline-command.ps1` | Antigravity CLI status line script for Windows (PowerShell prompt style) |
 | `gemini/statusline-setup.sh` | _(executed manually)_ | Bootstrap script: symlinks `statusline-command.sh` and updates `statusLine` in `~/.gemini/antigravity-cli/settings.json`. Idempotent. |
 | `gemini/statusline-setup.ps1` | _(executed manually)_ | PowerShell version of `statusline-setup.sh` for Windows. Idempotent. |
+| `codex/AGENTS.md` | `~/.codex/AGENTS.md` | Codex CLI global instructions (persona, principles) |
 
 ## Setup on a new machine
 

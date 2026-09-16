@@ -171,6 +171,13 @@ for rel in "${GEMINI_FILES[@]}"; do
   unlink_path "$DOTFILES_DIR/gemini/$rel" "$HOME/.gemini/$rel"
 done
 
+CODEX_FILES=(
+  AGENTS.md
+)
+for rel in "${CODEX_FILES[@]}"; do
+  unlink_path "$DOTFILES_DIR/codex/$rel" "$HOME/.codex/$rel"
+done
+
 unlink_path "$DOTFILES_DIR/zprezto/zpreztorc.loader" "$HOME/.zpreztorc"
 
 for prompt_file in "$DOTFILES_DIR"/zprezto/prompts/prompt_*_setup; do
