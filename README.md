@@ -47,13 +47,15 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
 | `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
-| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`. All three destinations are managed by the Unix installer. |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`. Managed by Unix `install.sh` and Windows `gemini/install.ps1`. |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 | `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
 | `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
 | `claude/windows/install.ps1` | _(executed manually)_ | Windows installer: creates the `~/.claude/…` symlinks for the Claude Code layer only |
 | `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI / Antigravity global instructions (persona, principles) |
+| `gemini/install.ps1` | _(executed manually)_ | Windows installer: creates `~/.gemini/` symlinks (`GEMINI.md` and shared skills) for Antigravity / Gemini CLI |
+| `gemini/uninstall.ps1` | _(executed manually)_ | Windows uninstaller: removes `~/.gemini/` symlinks and restores backups |
 | `gemini/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers for Gemini CLI via `gemini mcp add`. Tokens read from `~/.envs.local`. Idempotent. |
 | `gemini/plugin-setup.sh` | _(executed manually)_ | Bootstrap script: installs/updates Antigravity CLI plugins (e.g. `superpowers`). Idempotent. |
 | `gemini/plugin-setup.ps1` | _(executed manually)_ | PowerShell version of `plugin-setup.sh` for Windows. Idempotent. |
@@ -111,8 +113,9 @@ the archived Claude Code logs in the configured Obsidian vault; sharing the
 skill does not add Codex or Antigravity conversation archives. Diagram export
 still requires the draw.io desktop CLI.
 
-The native Windows installer remains scoped to Claude Code; the shared
-installation described here is for Unix, macOS, and WSL.
+Native Windows installers exist separately for Claude Code (`claude/windows/install.ps1`)
+and Antigravity CLI (`gemini/install.ps1`); the shared `install.sh` described here
+is for Unix, macOS, and WSL.
 
 ## Uninstall
 
@@ -154,12 +157,15 @@ chmod 600 ~/.envs.local   # if it will contain secrets
 $EDITOR ~/.paths.local ~/.envs.local
 ```
 
-## Windows 11 support (Claude Code only)
+## Windows 11 support (Claude Code & Antigravity CLI)
 
 The shell layer (`zshrc`, `zprezto/`, `aliases`, `paths`, `envs`, …) is Unix
-only. Only the Claude Code slice has a native Windows 11 port, under
-`claude/windows/`. Shared, cross-platform pieces (`claude/CLAUDE.md`,
-`claude/commands/`, `claude/skills/`) are linked from both installers.
+only. Dedicated Windows ports exist for Claude Code (`claude/windows/`) and
+Antigravity CLI (`gemini/`). Shared, cross-platform pieces (`claude/CLAUDE.md`,
+`gemini/GEMINI.md`, `claude/commands/`, `claude/skills/`) are linked by their
+respective Windows installers.
+
+### Claude Code on Windows
 
 ```powershell
 # One-time on a Windows 11 machine (Developer Mode ON, PowerShell 7 installed):
@@ -170,9 +176,29 @@ pwsh -File $HOME\.dotfiles\claude\windows\mcp-setup.ps1         # optional: MCP
 ```
 
 Full prerequisites, `.envs.local.ps1` template, and per-file mapping live in
-[`claude/windows/README.md`](claude/windows/README.md). WSL2 users should keep
-using the Unix `install.sh` — the Windows port is only for running Claude Code
-directly against `pwsh` on the Windows host.
+[`claude/windows/README.md`](claude/windows/README.md).
+
+### Antigravity CLI on Windows
+
+```powershell
+# Preview and link GEMINI.md and shared skills to ~/.gemini/:
+pwsh -File $HOME\.dotfiles\gemini\install.ps1 -DryRun           # preview
+pwsh -File $HOME\.dotfiles\gemini\install.ps1                   # apply
+
+# Optional: configure custom statusLine and install plugins:
+pwsh -File $HOME\.dotfiles\gemini\statusline-setup.ps1
+pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+```
+
+To roll back Antigravity CLI symlinks and restore previous files from backup:
+
+```powershell
+pwsh -File $HOME\.dotfiles\gemini\uninstall.ps1 -DryRun         # preview rollback
+pwsh -File $HOME\.dotfiles\gemini\uninstall.ps1                 # apply rollback
+```
+
+WSL2 users should keep using the Unix `install.sh` / `uninstall.sh` — the Windows
+scripts are for running tools directly against `pwsh` on the Windows host.
 
 ## Claude Code MCP servers
 

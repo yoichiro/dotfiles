@@ -59,9 +59,10 @@ pwsh -File $HOME\.dotfiles\claude\windows\mcp-setup.ps1
 # 5. Verify.
 claude mcp list
 
-# 6. (Optional) Install Antigravity CLI plugins and configure statusLine.
-pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+# 6. (Optional) Set up Antigravity CLI dotfiles, plugins, and statusLine.
+pwsh -File $HOME\.dotfiles\gemini\install.ps1
 pwsh -File $HOME\.dotfiles\gemini\statusline-setup.ps1
+pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
 ```
 
 Restart Claude Code afterwards so it picks up the linked `settings.json`.
@@ -130,8 +131,8 @@ line intentionally omits.
 ## Not ported (out of scope)
 
 - `zshrc`, `bashrc`, `profile`, `zprezto/`, `aliases`, `paths`, `envs`,
-  `gitconfig`, `vimrc`, `gemini/` (note: `gemini/plugin-setup.ps1` and
-  `gemini/statusline-setup.ps1` are provided for Antigravity setup). Shell
+  `gitconfig`, `vimrc`, `gemini/` (note: `gemini/install.ps1`, `gemini/plugin-setup.ps1`
+  and `gemini/statusline-setup.ps1` are provided for Antigravity setup). Shell
   UX on Windows is expected to be set up separately (PowerShell profile +
   `oh-my-posh` / Starship, if desired).
 - `claude/hooks/notify-windows.sh` — replaced by `notify.ps1` here.

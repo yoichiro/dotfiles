@@ -1,12 +1,13 @@
-# Create symlinks from $HOME to the Claude Code files in this dotfiles repo
-# (Windows-only port of install.sh, scoped to Claude Code — see repo README).
+# Create symlinks from $HOME to the Gemini / Antigravity files in this dotfiles repo
+# (Windows port of install.sh, scoped to Gemini / Antigravity CLI).
 #
 # Usage:
 #   pwsh -File .\install.ps1              # apply, backing up existing files
 #   pwsh -File .\install.ps1 -DryRun      # print actions, change nothing
 #
 # Behavior:
-#   - Links target files under $HOME\.claude\ to their sources in the repo.
+#   - Links target files under $HOME\.gemini\ to their sources in the repo.
+#   - Links shared skills under $HOME\.gemini\config\skills\ to claude\skills\.
 #   - Backs up any existing file / wrong link under
 #     $HOME\.dotfiles-backups\yyyyMMdd-HHmmss\ preserving the $HOME-relative
 #     path.
@@ -24,11 +25,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-# The script lives at <repo>\claude\windows\install.ps1; the dotfiles root is
-# two directories up from that.
+# The script lives at <repo>\gemini\install.ps1; the dotfiles root is
+# one directory up from that.
 $scriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
-$dotfilesDir = (Resolve-Path (Join-Path $scriptDir '..\..')).Path
-$windowsDir  = $scriptDir
+$dotfilesDir = (Resolve-Path (Join-Path $scriptDir '..')).Path
+$geminiDir   = $scriptDir
 $claudeDir   = Join-Path $dotfilesDir 'claude'
 
 $backupRoot = Join-Path $HOME '.dotfiles-backups'
@@ -98,27 +99,19 @@ function Link-Path {
     }
 }
 
-# Individual Claude Code files placed directly under $HOME\.claude\.
-# Layout matches settings.json's command paths (which expect notify.ps1 and
-# statusline-command.ps1 as siblings of CLAUDE.md — not in a hooks\
-# subdirectory).
+# Individual Gemini / Antigravity files placed under $HOME\.gemini\.
 $fileLinks = @(
-    @{ Source = (Join-Path $claudeDir  'CLAUDE.md');            Dest = (Join-Path $HOME '.claude\CLAUDE.md') }
-    @{ Source = (Join-Path $windowsDir 'settings.json');        Dest = (Join-Path $HOME '.claude\settings.json') }
-    @{ Source = (Join-Path $windowsDir 'notify.ps1');           Dest = (Join-Path $HOME '.claude\notify.ps1') }
-    @{ Source = (Join-Path $windowsDir 'statusline-command.ps1'); Dest = (Join-Path $HOME '.claude\statusline-command.ps1') }
-    @{ Source = (Join-Path $claudeDir  'commands\back-to-main.md'); Dest = (Join-Path $HOME '.claude\commands\back-to-main.md') }
+    @{ Source = (Join-Path $geminiDir 'GEMINI.md'); Dest = (Join-Path $HOME '.gemini\GEMINI.md') }
 )
 foreach ($entry in $fileLinks) {
     Link-Path -Source $entry.Source -Destination $entry.Dest
 }
 
-# Self-authored Claude Code skills: whole-directory symlinks so adding or
-# removing files inside a skill does not require re-running install.ps1.
-# gws-*, firebase-*, find-skills under ~/.claude/skills/ are managed elsewhere.
-$skillNames = @('design-doc-writer', 'drawio')
+# Shared skills: whole-directory symlinks matching the Unix installer.
+# Linked into $HOME\.gemini\config\skills\<name> as expected by Antigravity CLI.
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio')
 foreach ($name in $skillNames) {
-    Link-Path -Source (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".claude\skills\$name")
+    Link-Path -Source (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".gemini\config\skills\$name")
 }
 
 Write-Host ''
@@ -129,8 +122,6 @@ if ($DryRun) {
 } else {
     Write-Host 'Done. No files needed backing up.'
 }
-Write-Host "Reminder: put machine-local secrets in `$HOME\.envs.local.ps1 (`$env:MCP_GITHUB_PAT = '...', ...)."
-Write-Host "Then:     pwsh -File `"$windowsDir\mcp-setup.ps1`"    # to register Claude Code MCP servers"
-Write-Host "          pwsh -File `"$dotfilesDir\gemini\install.ps1`"      # to set up Antigravity CLI dotfiles"
-Write-Host "          pwsh -File `"$dotfilesDir\gemini\plugin-setup.ps1`" # to install Antigravity CLI plugins"
-Write-Host "          pwsh -File `"$dotfilesDir\gemini\statusline-setup.ps1`" # to configure Antigravity CLI statusLine"
+Write-Host "Next steps:"
+Write-Host "  pwsh -File `"$geminiDir\statusline-setup.ps1`" # to configure Antigravity CLI statusLine"
+Write-Host "  pwsh -File `"$geminiDir\plugin-setup.ps1`"     # to install Antigravity CLI plugins"
