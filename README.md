@@ -64,6 +64,10 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `gemini/statusline-setup.sh` | _(executed manually)_ | Bootstrap script: symlinks `statusline-command.sh` and updates `statusLine` in `~/.gemini/antigravity-cli/settings.json`. Idempotent. |
 | `gemini/statusline-setup.ps1` | _(executed manually)_ | PowerShell version of `statusline-setup.sh` for Windows. Idempotent. |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` | Codex CLI global instructions (persona, principles) |
+| `powershell/prompt.ps1` | _(sourced from $PROFILE)_ | PowerShell 7 prompt mirroring Claude Code and Antigravity CLI status line |
+| `powershell/prompt-setup.ps1` | _(executed by install.ps1)_ | Injects or removes prompt block in `$PROFILE`. Idempotent. |
+| `install.ps1` | _(executed manually)_ | Windows installer: configures PowerShell 7 prompt, Claude Code, and Antigravity CLI |
+| `uninstall.ps1` | _(executed manually)_ | Windows uninstaller: removes prompt configuration from `$PROFILE` |
 
 ## Setup on a new machine
 
@@ -157,45 +161,32 @@ chmod 600 ~/.envs.local   # if it will contain secrets
 $EDITOR ~/.paths.local ~/.envs.local
 ```
 
-## Windows 11 support (Claude Code & Antigravity CLI)
+## Windows 11 support (PowerShell 7, Claude Code, Antigravity CLI)
 
-The shell layer (`zshrc`, `zprezto/`, `aliases`, `paths`, `envs`, …) is Unix
-only. Dedicated Windows ports exist for Claude Code (`claude/windows/`) and
-Antigravity CLI (`gemini/`). Shared, cross-platform pieces (`claude/CLAUDE.md`,
-`gemini/GEMINI.md`, `claude/commands/`, `claude/skills/`) are linked by their
-respective Windows installers.
-
-### Claude Code on Windows
+On Windows 11, the unified installer `install.ps1` configures:
+- **PowerShell 7 Prompt**: Sourced from `powershell/prompt.ps1` via `$PROFILE`, displaying cwd (`~` shortened) and Git branch in a single line matching Claude Code / Antigravity CLI status lines.
+- **Claude Code**: Symlinks `~/.claude/` files and skills under `claude/windows/` and `claude/`.
+- **Antigravity CLI**: Symlinks `~/.gemini/` files/skills via `gemini/install.ps1` and configures `statusLine` in `~/.gemini/antigravity-cli/settings.json`.
 
 ```powershell
-# One-time on a Windows 11 machine (Developer Mode ON, PowerShell 7 installed):
+# One-time unified setup on a Windows 11 machine (Developer Mode ON, PowerShell 7 installed):
 git clone <repo-url> $HOME\.dotfiles
-pwsh -File $HOME\.dotfiles\claude\windows\install.ps1 -DryRun   # preview
-pwsh -File $HOME\.dotfiles\claude\windows\install.ps1           # apply
-pwsh -File $HOME\.dotfiles\claude\windows\mcp-setup.ps1         # optional: MCP
+pwsh -File $HOME\.dotfiles\install.ps1 -DryRun   # preview
+pwsh -File $HOME\.dotfiles\install.ps1           # apply
+pwsh -File $HOME\.dotfiles\claude\windows\mcp-setup.ps1         # optional: Claude Code MCP
+pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1              # optional: Antigravity CLI plugins
 ```
 
-Full prerequisites, `.envs.local.ps1` template, and per-file mapping live in
-[`claude/windows/README.md`](claude/windows/README.md).
-
-### Antigravity CLI on Windows
+To roll back:
 
 ```powershell
-# Preview and link GEMINI.md and shared skills to ~/.gemini/:
-pwsh -File $HOME\.dotfiles\gemini\install.ps1 -DryRun           # preview
-pwsh -File $HOME\.dotfiles\gemini\install.ps1                   # apply
-
-# Optional: configure custom statusLine and install plugins:
-pwsh -File $HOME\.dotfiles\gemini\statusline-setup.ps1
-pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+pwsh -File $HOME\.dotfiles\uninstall.ps1 -DryRun         # preview rollback
+pwsh -File $HOME\.dotfiles\uninstall.ps1                 # apply rollback
 ```
 
-To roll back Antigravity CLI symlinks and restore previous files from backup:
-
-```powershell
-pwsh -File $HOME\.dotfiles\gemini\uninstall.ps1 -DryRun         # preview rollback
-pwsh -File $HOME\.dotfiles\gemini\uninstall.ps1                 # apply rollback
-```
+Full prerequisites, `.envs.local.ps1` template, and per-component details live in
+[`claude/windows/README.md`](claude/windows/README.md) and individual scripts under `gemini/`.
+Individual component installers (`claude/windows/install.ps1`, `gemini/install.ps1`, `gemini/uninstall.ps1`) can also be run standalone.
 
 WSL2 users should keep using the Unix `install.sh` / `uninstall.sh` — the Windows
 scripts are for running tools directly against `pwsh` on the Windows host.

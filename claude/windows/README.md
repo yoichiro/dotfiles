@@ -131,10 +131,9 @@ line intentionally omits.
 ## Not ported (out of scope)
 
 - `zshrc`, `bashrc`, `profile`, `zprezto/`, `aliases`, `paths`, `envs`,
-  `gitconfig`, `vimrc`, `gemini/` (note: `gemini/install.ps1`, `gemini/plugin-setup.ps1`
-  and `gemini/statusline-setup.ps1` are provided for Antigravity setup). Shell
-  UX on Windows is expected to be set up separately (PowerShell profile +
-  `oh-my-posh` / Starship, if desired).
+  `gitconfig`, `vimrc` (note: `powershell/` provides the PowerShell 7 prompt
+  configured via root `install.ps1`, and `gemini/install.ps1` /
+  `gemini/statusline-setup.ps1` / `gemini/plugin-setup.ps1` handle Antigravity setup).
 - `claude/hooks/notify-windows.sh` — replaced by `notify.ps1` here.
 - `claude/statusline-command.sh` — not ported (see above).
 - `claude/mcp-setup.sh` — replaced by `mcp-setup.ps1` here.
