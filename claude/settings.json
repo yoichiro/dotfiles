@@ -117,6 +117,5 @@
   },
   "tui": "fullscreen",
   "theme": "dark",
-  "skipAutoPermissionPrompt": true,
-  "model": "claude-opus-4-7[1m]"
+  "skipAutoPermissionPrompt": true
 }

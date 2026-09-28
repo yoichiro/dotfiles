@@ -6,5 +6,8 @@ export PATH=$HOME/bin:$PATH
 export PATH=$PATH:$HOME/.local/bin
 export PATH="$PATH:$HOME/.dotnet/tools"
 
+# 1Password CLI for Windows
+export PATH=$PATH:/mnt/c/Users/yoichiro/AppData/Local/Microsoft/WinGet/Links
+
 # Load machine-specific PATH overrides (e.g. WSL paths). Not tracked by git.
 [ -f "$HOME/.paths.local" ] && source "$HOME/.paths.local"

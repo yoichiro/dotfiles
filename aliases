@@ -9,6 +9,7 @@ alias gcloud-blog-server='gcloud config set project eisbahn-jp-web-service'
 alias emacs='emacs -nw'
 alias activate='source ./venv/bin/activate'
 alias gemini='GOOGLE_CLOUD_PROJECT="gemini-cli-464100" gemini'
+alias op='op.exe'
 
 # Drop the zprezto git module's `gws` alias so our `st` above stays as the
 # canonical short status command. Sourced after zprezto, so this wins.
