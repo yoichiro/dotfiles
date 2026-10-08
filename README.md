@@ -47,7 +47,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
 | `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
-| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`. Managed by Unix `install.sh` and Windows `gemini/install.ps1`. |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-viewer`. Managed by Unix `install.sh` and Windows `gemini/install.ps1`. |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 | `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
 | `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
@@ -95,9 +95,10 @@ directory symlink, so edits and supporting references stay in sync.
 | `adr-from-history` | Reconstruct and maintain architecture decisions from archived Claude Code conversations |
 | `design-doc-writer` | Write Japanese design documents grounded in the project source code |
 | `drawio` | Create editable draw.io diagrams and optionally export PNG, SVG, or PDF |
+| `noriba-viewer` | Open or close a Markdown file in the noriba terminal's file viewer via `noriba-cli` |
 
 Run `./install.sh --dry-run` to preview the links, then `./install.sh` to apply
-them. Existing conflicting entries are backed up as usual. Only these three
+them. Existing conflicting entries are backed up as usual. Only these four
 skill names are managed; other installed skills are left alone.
 
 - **Claude Code:** `~/.claude/skills/<name>/`
@@ -115,7 +116,8 @@ instructions may name Claude Code tools; use the current host's equivalent
 file, search, shell, or delegation tools. `adr-from-history` still requires
 the archived Claude Code logs in the configured Obsidian vault; sharing the
 skill does not add Codex or Antigravity conversation archives. Diagram export
-still requires the draw.io desktop CLI.
+still requires the draw.io desktop CLI. `noriba-viewer` works only when the CLI
+runs inside a noriba terminal, where `noriba-cli` is on `PATH`.
 
 Native Windows installers exist separately for Claude Code (`claude/windows/install.ps1`)
 and Antigravity CLI (`gemini/install.ps1`); the shared `install.sh` described here

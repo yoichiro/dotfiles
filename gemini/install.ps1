@@ -109,7 +109,7 @@ foreach ($entry in $fileLinks) {
 
 # Shared skills: whole-directory symlinks matching the Unix installer.
 # Linked into $HOME\.gemini\config\skills\<name> as expected by Antigravity CLI.
-$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio')
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-viewer')
 foreach ($name in $skillNames) {
     Link-Path -Source (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".gemini\config\skills\$name")
 }

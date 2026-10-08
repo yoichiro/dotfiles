@@ -112,6 +112,7 @@ SHARED_SKILLS=(
   adr-from-history
   design-doc-writer
   drawio
+  noriba-viewer
 )
 SKILL_DIRS=(
   .claude/skills

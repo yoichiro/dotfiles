@@ -132,7 +132,7 @@ function Unlink-Path {
 Unlink-Path -ExpectedSource (Join-Path $geminiDir 'GEMINI.md') -Destination (Join-Path $HOME '.gemini\GEMINI.md')
 
 # 2. Unlink shared skills
-$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio')
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-viewer')
 foreach ($name in $skillNames) {
     Unlink-Path -ExpectedSource (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".gemini\config\skills\$name")
 }
