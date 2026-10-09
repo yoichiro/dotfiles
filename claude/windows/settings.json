@@ -7,30 +7,7 @@
     "commit": "",
     "pr": ""
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "pwsh -NoProfile -NonInteractive -File C:/Users/yoichiro/.claude/notify.ps1"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "pwsh -NoProfile -NonInteractive -File C:/Users/yoichiro/.claude/notify.ps1"
-          }
-        ]
-      }
-    ]
-  },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
@@ -46,7 +23,8 @@
     "modern-web-guidance@googlechrome": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
     "document-skills@anthropic-agent-skills": true,
-    "rust-analyzer-lsp@claude-plugins-official": true
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "cc-plugin-you-should-know@builtin": false
   },
   "extraKnownMarketplaces": {
     "anthropic-agent-skills": {
@@ -148,6 +126,5 @@
       "**Org-specific CLIs**: None configured",
       "routine cargo/rustc/clippy/fmt operations under this repo's working tree are standard toolchain use, not org-specific"
     ]
-  },
-  "model": "claude-opus-4-7[1m]"
+  }
 }

@@ -7,30 +7,6 @@
     "commit": "",
     "pr": ""
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/home/yoichiro/.claude/hooks/notify-windows.sh"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/home/yoichiro/.claude/hooks/notify-windows.sh"
-          }
-        ]
-      }
-    ]
-  },
   "statusLine": {
     "type": "command",
     "command": "bash /home/yoichiro/.claude/statusline-command.sh"

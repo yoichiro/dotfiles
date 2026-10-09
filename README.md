@@ -8,8 +8,7 @@ also rely on zprezto's `helper` and `git` modules being loaded — this is set
 up by the `zpreztorc` shipped here.
 
 The Claude Code config under `claude/` assumes [Claude Code](https://claude.com/claude-code)
-is installed and that its config root is `~/.claude/`. The `notify-windows.sh`
-hook is WSL2-specific (calls Windows PowerShell at a hardcoded path). A native
+is installed and that its config root is `~/.claude/`. A native
 Windows 11 port of just the Claude Code layer lives under `claude/windows/` —
 see [Windows 11 support (Claude Code only)](#windows-11-support-claude-code-only).
 
@@ -43,14 +42,12 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `zprezto/zpreztorc.local` | _(sourced from loader)_ | Diff vs upstream: extra modules (`git`/`autosuggestions`/`syntax-highlighting`), `yoichiro` prompt theme, syntax-highlighting tweaks |
 | `zprezto/prompts/prompt_*_setup` | `~/.zsh/prompts/prompt_*_setup` | Custom **zprezto** prompt themes (require zprezto's `helper` and `git` modules at runtime) |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | Claude Code global instructions (persona, principles) |
-| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings: hooks, statusLine, enabled plugins, spinner verbs |
+| `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings: statusLine, enabled plugins, spinner verbs |
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
-| `claude/hooks/notify-windows.sh` | `~/.claude/hooks/notify-windows.sh` | Stop/Notification hook → Windows toast via PowerShell (WSL2) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
 | `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-viewer`. Managed by Unix `install.sh` and Windows `gemini/install.ps1`. |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 | `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
-| `claude/windows/notify.ps1` | `~/.claude/notify.ps1` (Windows) | Native PowerShell Stop/Notification hook → Windows toast (replaces `hooks/notify-windows.sh` on Windows) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
 | `claude/windows/install.ps1` | _(executed manually)_ | Windows installer: creates the `~/.claude/…` symlinks for the Claude Code layer only |
 | `gemini/GEMINI.md` | `~/.gemini/GEMINI.md` | Gemini CLI / Antigravity global instructions (persona, principles) |

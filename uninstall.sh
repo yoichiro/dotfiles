@@ -149,6 +149,8 @@ CLAUDE_FILES=(
   CLAUDE.md
   settings.json
   statusline-command.sh
+  # Legacy: the notification hook was removed; keep this entry so older
+  # installs get their now-dangling symlink cleaned up.
   hooks/notify-windows.sh
   commands/back-to-main.md
 )

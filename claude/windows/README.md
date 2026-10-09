@@ -9,8 +9,7 @@ ported — see the root `README.md` for the reasoning. Only Claude Code's own
 
 | File | Windows target | Purpose |
 |---|---|---|
-| `settings.json` | `~/.claude/settings.json` | Same shape as the Unix `claude/settings.json`. Hook command invokes `pwsh -File …` with Windows paths; `statusLine` invokes `statusline-command.ps1` (see below). |
-| `notify.ps1` | `~/.claude/notify.ps1` | Stop / Notification hook — Windows toast via the [BurntToast](https://github.com/Windos/BurntToast) module. Pure PowerShell (no WSL round-trip). |
+| `settings.json` | `~/.claude/settings.json` | Same shape as the Unix `claude/settings.json`. `statusLine` invokes `statusline-command.ps1` (see below). |
 | `statusline-command.ps1` | `~/.claude/statusline-command.ps1` | `statusLine` command — reads Claude Code's JSON on stdin and prints `📁 <cwd>  🌿 <git branch>[⚠️]`. Slim by design (see below). |
 | `mcp-setup.ps1` | _(run manually)_ | Registers all user-scoped MCP servers. Reads tokens from `~/.envs.local.ps1`. |
 | `install.ps1` | _(run once)_ | Creates the symlinks from `~/.claude/…` into this repo. |
@@ -28,16 +27,9 @@ Windows installer just links to the same files.
    Without this, `New-Item -ItemType SymbolicLink` needs an elevated shell.
 4. **Git for Windows** — used by MCP `github` server bootstrap and general
    Git tooling.
-5. **[BurntToast](https://github.com/Windos/BurntToast) PowerShell module** —
-   used by `notify.ps1`. PowerShell 7 has no built-in WinRT projection, so
-   the direct `Windows.UI.Notifications` API is unavailable; BurntToast is
-   the community-standard workaround.
-   ```powershell
-   Install-Module -Name BurntToast -Scope CurrentUser -Force -AllowClobber
-   ```
-6. **[Claude Code](https://claude.com/claude-code)** installed and its config
+5. **[Claude Code](https://claude.com/claude-code)** installed and its config
    root at `%USERPROFILE%\.claude\` (the default).
-7. This repo cloned to `%USERPROFILE%\.dotfiles\` (matches the paths baked
+6. This repo cloned to `%USERPROFILE%\.dotfiles\` (matches the paths baked
    into `settings.json`).
 
 ## Setup
@@ -94,10 +86,8 @@ icacls $HOME\.envs.local.ps1 /inheritance:r /grant:r "$($env:USERNAME):(R,W)"
 
 | Concern | Unix / WSL2 | Windows 11 |
 |---|---|---|
-| Notification transport | `bash` → `powershell.exe /mnt/c/...` from WSL | Native PowerShell via BurntToast (no round-trip) |
 | JSON parsing | `jq` | `ConvertFrom-Json` |
 | Status line | Custom seasonal/hourly/git-aware theme via `bash`+`jq` | Slim `pwsh` script showing cwd + git branch (see below) |
-| Hook path in `settings.json` | `/home/yoichiro/.claude/hooks/notify-windows.sh` | `pwsh -NoProfile -NonInteractive -File C:\Users\yoichiro\.claude\notify.ps1` |
 | Symlink creation | `ln -s` | `New-Item -ItemType SymbolicLink` (needs Developer Mode) |
 | Env file | `~/.envs.local` (bash `export`) | `~/.envs.local.ps1` (PowerShell `$env:…`) |
 
@@ -134,6 +124,5 @@ line intentionally omits.
   `gitconfig`, `vimrc` (note: `powershell/` provides the PowerShell 7 prompt
   configured via root `install.ps1`, and `gemini/install.ps1` /
   `gemini/statusline-setup.ps1` / `gemini/plugin-setup.ps1` handle Antigravity setup).
-- `claude/hooks/notify-windows.sh` — replaced by `notify.ps1` here.
 - `claude/statusline-command.sh` — not ported (see above).
 - `claude/mcp-setup.sh` — replaced by `mcp-setup.ps1` here.
