@@ -7,7 +7,6 @@
     "commit": "",
     "pr": ""
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
