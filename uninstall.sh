@@ -162,6 +162,7 @@ SHARED_SKILLS=(
   adr-from-history
   design-doc-writer
   drawio
+  noriba-messaging
   noriba-viewer
 )
 SKILL_DIRS=(

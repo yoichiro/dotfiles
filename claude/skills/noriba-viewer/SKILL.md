@@ -1,8 +1,8 @@
 ---
 name: noriba-viewer
-description: Open a Markdown file in the noriba terminal's built-in file viewer (`noriba-cli open <file>`), or close that viewer (`noriba-cli close`). Use this skill whenever the user explicitly asks to show / open / display a Markdown file IN THE VIEWER or IN NORIBA, or asks to close the viewer - e.g. "ビューアで開いて", "設計書をビューアに表示して", "noriba で README 見せて", "さっきのファイル、ビューアで見たい", "ビューア閉じて", "open the plan in the viewer". Do not use it when the user just wants to read or see a file's contents in the chat without mentioning the viewer or noriba.
+description: Open a Markdown file in the noriba terminal's built-in file viewer (`noriba-cli view open <file>`), or close that viewer (`noriba-cli view close`). Use this skill whenever the user explicitly asks to show / open / display a Markdown file IN THE VIEWER or IN NORIBA, or asks to close the viewer - e.g. "ビューアで開いて", "設計書をビューアに表示して", "noriba で README 見せて", "さっきのファイル、ビューアで見たい", "ビューア閉じて", "open the plan in the viewer". Do not use it when the user just wants to read or see a file's contents in the chat without mentioning the viewer or noriba.
 argument-hint: "[file | close]"
-allowed-tools: Bash(noriba-cli open *), Bash(noriba-cli close)
+allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view close)
 ---
 
 # noriba file viewer
@@ -14,12 +14,17 @@ already on PATH inside noriba (Windows, macOS and WSL alike).
 
 | Request | Command |
 |---|---|
-| Show a file | `noriba-cli open "<path>"` |
-| Close the viewer | `noriba-cli close` |
+| Show a file | `noriba-cli view open "<path>"` |
+| Close the viewer | `noriba-cli view close` |
 
 The viewer shows one document per terminal: opening another file replaces the
 current one, and it reloads by itself when the file changes on disk, so there is
 no need to reopen a file after editing it.
+
+`noriba-cli` groups its subcommands by feature (`view ...` for the viewer,
+`msg ...` for terminal messaging). The bare `noriba-cli open` / `noriba-cli
+close` forms still work as shortcuts, but always use the `view` form here so the
+calls match the `allowed-tools` list above.
 
 ## Only when asked
 

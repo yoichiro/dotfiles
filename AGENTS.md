@@ -7,7 +7,7 @@ This repository manages personal dotfiles through directory and file symlinks.
 - Keep the canonical skill sources in `claude/skills/`, including their
   references and templates. Do not copy skill content per CLI.
 - The Unix installer and Windows `gemini/install.ps1` link `adr-from-history`,
-  `design-doc-writer`, `drawio`, and `noriba-viewer` into `~/.claude/skills/`,
+  `design-doc-writer`, `drawio`, `noriba-messaging`, and `noriba-viewer` into `~/.claude/skills/`,
   `~/.agents/skills/` (Codex), and `~/.gemini/config/skills/` (Antigravity).
 - Keep the explicit skill names and destination lists in `install.sh`,
   `uninstall.sh`, and `gemini/install.ps1` aligned. Never link evaluation

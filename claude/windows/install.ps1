@@ -114,7 +114,7 @@ foreach ($entry in $fileLinks) {
 # Self-authored Claude Code skills: whole-directory symlinks so adding or
 # removing files inside a skill does not require re-running install.ps1.
 # gws-*, firebase-*, find-skills under ~/.claude/skills/ are managed elsewhere.
-$skillNames = @('design-doc-writer', 'drawio', 'noriba-viewer')
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-messaging', 'noriba-viewer')
 foreach ($name in $skillNames) {
     Link-Path -Source (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".claude\skills\$name")
 }
