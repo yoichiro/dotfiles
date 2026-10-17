@@ -78,7 +78,7 @@ ambiguous prefix fails with `no matching destination terminals found`.
 - The user's word matches a `ROLE` ("mac 側", "builder に"): `--role <role>`.
   It reaches exactly one terminal, the first of that role that answers; use
   the ID when several terminals share a role and the user means one of them.
-- It matches a `HOST` (machine names such as `penkichi-1054`, so a word like
+- It matches a `HOST` (machine names such as `my-macbook`, so a word like
   "mac" is normally a role) or the user describes a terminal: pick the row
   in `msg list` and use its ID.
 - Everyone: `--all`.
