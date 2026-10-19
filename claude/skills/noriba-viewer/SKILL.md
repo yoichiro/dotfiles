@@ -83,7 +83,13 @@ error.
    outline` to learn where it is, then `view goto`. Markdown headings are listed
    as `<line>  ## Title`; to select the whole chapter, give the range from the
    heading's line to the line before the next heading (`view goto 40-71`). A
-   PDF lists its bookmarks as `p.<page>  Title`; go to that page.
+   PDF lists its bookmarks as `p.<page>  Title`; go to that page. When the
+   outline says `no outline (the PDF has no bookmarks)`, run `view find <chapter
+   title>` instead and pick the match that is the chapter heading itself from
+   context (the first occurrence after the table of contents, not the table of
+   contents entry or a running page header), with `--nth` if it is not the first.
+   `no outline (source file)`: read the file yourself and `goto` the lines;
+   `no outline (no headings)`: the Markdown has no headings, use `view find`.
 2. **A phrase or a sentence** ("△△と書いてあるところ"): in a Markdown or source file
    you may read the file yourself, pick the line and `view goto` it, or just
    `view find <text>`; in a PDF always use `view find` (you cannot read its
@@ -130,6 +136,8 @@ line or page prints the place it went to. Otherwise:
 | 1 | `noriba-cli: no matches for "<text>"` | Nothing found; try another wording (see above), then say so. |
 | 1 | `noriba-cli: match 7 does not exist (3 matches)` / `no previous find` / `no more matches (3 of 3)` / `already at the first match` | `--nth` is out of range, there is no earlier find, or you are at the end of the matches. |
 | 1 | `noriba-cli: the PDF is not on screen (switch to this terminal and show the window), so it cannot be searched` | A PDF can be searched only while it is visible; ask the user to switch to this terminal and show the noriba window, then retry. |
+| 0 | `no outline (the PDF has no bookmarks)` (stdout) | Nothing to tell yet: `view find` the chapter title and jump to the heading match (see "Jumping to a place"). |
+| 0 | `no outline (source file)` / `no outline (no headings)` (stdout) | A source file has no outline (read it and `goto` the lines); the Markdown has no headings (use `view find`). |
 | 1 | `noriba-cli: the viewer page did not answer` | The page did not answer in time (a very large PDF); retry once, a second try is usually fast. |
 | 1 | `noriba-cli: this noriba does not support `view goto` (update noriba)` | The running noriba is older than `noriba-cli`; the user needs to update noriba. |
 | 0 | `noriba-cli: this noriba ignored the location (update noriba)` (a warning) | The file is open but the old noriba did not jump; the user needs to update noriba. |
