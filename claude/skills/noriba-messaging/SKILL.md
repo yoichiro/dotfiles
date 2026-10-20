@@ -20,7 +20,7 @@ every machine.
 
 | Request | Command |
 |---|---|
-| Join the bus (required to receive) | `noriba-cli msg join --role <role> [--desc "<text>"] --auto-enter` |
+| Join the bus (required to receive) | `noriba-cli msg join --role <role> [--desc "<text>"] --auto-enter [--no-screen]` |
 | Current state of this terminal | `noriba-cli msg status` |
 | Terminals of the project | `noriba-cli msg list [--role <role>]` |
 | Send to one terminal | `noriba-cli msg send <id> "<message>"` |
@@ -29,7 +29,7 @@ every machine.
 | Leave the bus | `noriba-cli msg leave` |
 
 `--role`, `--desc` and `--wait` take their value as the next word or as
-`--flag=value`; `--auto-enter`, `--raw`, `--no-enter` and `--all` take none.
+`--flag=value`; `--auto-enter`, `--raw`, `--no-screen`, `--no-enter` and `--all` take none.
 Put `--` before a message that starts with `-`.
 
 ## Only when asked
@@ -64,7 +64,10 @@ replaces the registration).
    agents can hand work to each other without a person pressing Enter.
    Mention in the confirmation that auto-enter is on.
 3. `--desc "<text>"` is optional; it only shows in `msg status` today.
-4. **Never pass `--raw`** from an agent terminal: it removes the sender
+4. **Joining publishes this terminal's screen** (read-only) and its waiting
+   notification text to the other machines' noriba of the same project; pass
+   `--no-screen` when the user does not want that.
+5. **Never pass `--raw`** from an agent terminal: it removes the sender
    header, and it exists for a plain shell that runs delivered commands.
 
 ## Picking the destination
@@ -117,6 +120,8 @@ message it answers.
   2 seconds, clamped to 1-3; `--wait 240` means 3). It never waits for an
   answer: `msg send` returns as soon as the message is delivered. Pass
   `--wait 3` only in the one retry described under "Reading the result".
+- `--all` always waits the whole discovery window (about 2 seconds) before
+  it delivers, because it cannot know when every terminal has answered.
 
 Success prints `Message delivered to N terminal(s)`: `N` is 1 for an ID or
 a role, the number of joined terminals for `--all`. An answer, if the other
@@ -159,8 +164,8 @@ It is not something the user typed.
 `noriba-cli` prints nothing on success for `join` / `leave` (exit 0), the
 table for `list`, `Message delivered to N terminal(s)` for `send`, and for
 `status` either `Joined: false` / `Role: none` or the lines `Joined: true`,
-`Role:`, `Auto-Enter: ON|OFF`, `Sender-Header: ON|OFF` and, when given,
-`Description:` (the terminal's own ID is not shown there). Otherwise:
+`Role:`, `Auto-Enter: ON|OFF`, `Sender-Header: ON|OFF`, `Screen: shared|off`,
+`Viewers: N` and, when given, `Description:` (the terminal's own ID is not shown there). Otherwise:
 
 | Exit | stderr | What to tell the user |
 |---|---|---|
