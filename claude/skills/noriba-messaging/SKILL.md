@@ -64,9 +64,11 @@ replaces the registration).
    agents can hand work to each other without a person pressing Enter.
    Mention in the confirmation that auto-enter is on.
 3. `--desc "<text>"` is optional; it only shows in `msg status` today.
-4. **Joining publishes this terminal's screen** (read-only) and its waiting
-   notification text to the other machines' noriba of the same project; pass
-   `--no-screen` when the user does not want that.
+4. **Joining publishes this terminal's screen** and its waiting
+   notification text to the other machines' noriba of the same project. Joining
+   also means that noriba can type a reply into this terminal (text plus Enter,
+   arrow keys, Esc, Tab, Ctrl+C), not only watch it. Pass `--no-screen` when
+   the user wants neither.
 5. **Never pass `--raw`** from an agent terminal: it removes the sender
    header, and it exists for a plain shell that runs delivered commands.
 

@@ -67,7 +67,7 @@ text). Images are not supported yet: if the user asks for one, do not call
 `noriba-cli`; tell them images cannot be shown yet. A file over its size limit
 still opens, but the pane shows a "too large" notice instead of the document -
 say so when you know the file is that big. A file that looks binary (NUL bytes in its first 8 KiB,
-such as UTF-16 text) opens with a "テキストファイルではありません" notice.
+such as UTF-16 text) opens with a "Not a text file" notice.
 
 ## Jumping to a place
 
