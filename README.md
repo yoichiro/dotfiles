@@ -10,7 +10,7 @@ up by the `zpreztorc` shipped here.
 The Claude Code config under `claude/` assumes [Claude Code](https://claude.com/claude-code)
 is installed and that its config root is `~/.claude/`. A native
 Windows 11 port of just the Claude Code layer lives under `claude/windows/` —
-see [Windows 11 support (Claude Code only)](#windows-11-support-claude-code-only).
+see [Windows 11 support](#windows-11-support-powershell-7-claude-code-codex-cli-antigravity-cli).
 
 The Gemini CLI / Antigravity CLI config under `gemini/` assumes [Gemini CLI](https://github.com/google-gemini/gemini-cli)
 or [Antigravity CLI](https://antigravity.google) is installed and its config root is `~/.gemini/`. Note: `~/.gemini/` also
@@ -45,7 +45,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings: statusLine, enabled plugins, spinner verbs |
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
-| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-messaging`, `noriba-viewer`. Managed by Unix `install.sh` and Windows `gemini/install.ps1`. |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-messaging`, `noriba-viewer`. Managed by Unix `install.sh` and, on Windows, `claude/windows/install.ps1` (`~/.claude/`), `codex/install.ps1` (`~/.agents/`), and `gemini/install.ps1` (`~/.gemini/`). |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 | `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
@@ -61,10 +61,12 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `gemini/statusline-setup.sh` | _(executed manually)_ | Bootstrap script: symlinks `statusline-command.sh` and updates `statusLine` in `~/.gemini/antigravity-cli/settings.json`. Idempotent. |
 | `gemini/statusline-setup.ps1` | _(executed manually)_ | PowerShell version of `statusline-setup.sh` for Windows. Idempotent. |
 | `codex/AGENTS.md` | `~/.codex/AGENTS.md` | Codex CLI global instructions (persona, principles) |
+| `codex/install.ps1` | _(executed manually)_ | Windows installer: creates `~/.codex/AGENTS.md` and `~/.agents/skills/` symlinks for Codex CLI |
+| `codex/uninstall.ps1` | _(executed manually)_ | Windows uninstaller: removes `~/.codex/` and `~/.agents/skills/` symlinks and restores backups |
 | `powershell/prompt.ps1` | _(sourced from $PROFILE)_ | PowerShell 7 prompt mirroring Claude Code and Antigravity CLI status line |
 | `powershell/prompt-setup.ps1` | _(executed by install.ps1)_ | Injects or removes prompt block in `$PROFILE`. Idempotent. |
-| `install.ps1` | _(executed manually)_ | Windows installer: configures PowerShell 7 prompt, Claude Code, and Antigravity CLI |
-| `uninstall.ps1` | _(executed manually)_ | Windows uninstaller: removes prompt configuration from `$PROFILE` |
+| `install.ps1` | _(executed manually)_ | Windows installer: configures PowerShell 7 prompt, Claude Code, Antigravity CLI, and Codex CLI |
+| `uninstall.ps1` | _(executed manually)_ | Windows uninstaller: removes prompt configuration from `$PROFILE` and rolls back Antigravity / Codex CLI symlinks |
 
 ## Setup on a new machine
 
@@ -118,9 +120,9 @@ still requires the draw.io desktop CLI. `noriba-viewer` and `noriba-messaging` w
 only when the CLI runs inside a noriba terminal, where `noriba-cli` is on `PATH`;
 messaging also needs a passcode set on the noriba project.
 
-Native Windows installers exist separately for Claude Code (`claude/windows/install.ps1`)
-and Antigravity CLI (`gemini/install.ps1`); the shared `install.sh` described here
-is for Unix, macOS, and WSL.
+Native Windows installers exist separately for Claude Code (`claude/windows/install.ps1`),
+Codex CLI (`codex/install.ps1`), and Antigravity CLI (`gemini/install.ps1`); the shared
+`install.sh` described here is for Unix, macOS, and WSL.
 
 ## Uninstall
 
@@ -162,12 +164,13 @@ chmod 600 ~/.envs.local   # if it will contain secrets
 $EDITOR ~/.paths.local ~/.envs.local
 ```
 
-## Windows 11 support (PowerShell 7, Claude Code, Antigravity CLI)
+## Windows 11 support (PowerShell 7, Claude Code, Codex CLI, Antigravity CLI)
 
 On Windows 11, the unified installer `install.ps1` configures:
 - **PowerShell 7 Prompt**: Sourced from `powershell/prompt.ps1` via `$PROFILE`, displaying cwd (`~` shortened) and Git branch in a single line matching Claude Code / Antigravity CLI status lines.
 - **Claude Code**: Symlinks `~/.claude/` files and skills under `claude/windows/` and `claude/`.
 - **Antigravity CLI**: Symlinks `~/.gemini/` files/skills via `gemini/install.ps1` and configures `statusLine` in `~/.gemini/antigravity-cli/settings.json`.
+- **Codex CLI**: Symlinks `~/.codex/AGENTS.md` and `~/.agents/skills/` via `codex/install.ps1`.
 
 ```powershell
 # One-time unified setup on a Windows 11 machine (Developer Mode ON, PowerShell 7 installed):
@@ -187,7 +190,7 @@ pwsh -File $HOME\.dotfiles\uninstall.ps1                 # apply rollback
 
 Full prerequisites, `.envs.local.ps1` template, and per-component details live in
 [`claude/windows/README.md`](claude/windows/README.md) and individual scripts under `gemini/`.
-Individual component installers (`claude/windows/install.ps1`, `gemini/install.ps1`, `gemini/uninstall.ps1`) can also be run standalone.
+Individual component installers (`claude/windows/install.ps1`, `gemini/install.ps1`, `gemini/uninstall.ps1`, `codex/install.ps1`, `codex/uninstall.ps1`) can also be run standalone.
 
 WSL2 users should keep using the Unix `install.sh` / `uninstall.sh` — the Windows
 scripts are for running tools directly against `pwsh` on the Windows host.

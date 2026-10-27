@@ -55,6 +55,9 @@ claude mcp list
 pwsh -File $HOME\.dotfiles\gemini\install.ps1
 pwsh -File $HOME\.dotfiles\gemini\statusline-setup.ps1
 pwsh -File $HOME\.dotfiles\gemini\plugin-setup.ps1
+
+# 7. (Optional) Set up Codex CLI dotfiles (AGENTS.md and shared skills).
+pwsh -File $HOME\.dotfiles\codex\install.ps1
 ```
 
 Restart Claude Code afterwards so it picks up the linked `settings.json`.

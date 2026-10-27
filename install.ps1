@@ -8,7 +8,8 @@
 #   1. Configures PowerShell 7 prompt in $PROFILE (via powershell\prompt-setup.ps1)
 #   2. Installs Claude Code Windows configuration (via claude\windows\install.ps1)
 #   3. Installs Antigravity CLI symlinks (via gemini\install.ps1)
-#   4. Configures Antigravity CLI statusLine (via gemini\statusline-setup.ps1)
+#   4. Installs Codex CLI symlinks (via codex\install.ps1)
+#   5. Configures Antigravity CLI statusLine (via gemini\statusline-setup.ps1)
 
 [CmdletBinding()]
 param(
@@ -26,7 +27,7 @@ if ($DryRun) {
 Write-Host ""
 
 # 1. PowerShell 7 Prompt
-Write-Host "[1/4] Configuring PowerShell 7 prompt..."
+Write-Host "[1/5] Configuring PowerShell 7 prompt..."
 $promptSetup = Join-Path $scriptDir 'powershell\prompt-setup.ps1'
 if (Test-Path -LiteralPath $promptSetup) {
     & $promptSetup -DryRun:$DryRun
@@ -36,7 +37,7 @@ if (Test-Path -LiteralPath $promptSetup) {
 Write-Host ""
 
 # 2. Claude Code Windows
-Write-Host "[2/4] Installing Claude Code configuration..."
+Write-Host "[2/5] Installing Claude Code configuration..."
 $claudeInstall = Join-Path $scriptDir 'claude\windows\install.ps1'
 if (Test-Path -LiteralPath $claudeInstall) {
     & $claudeInstall -DryRun:$DryRun
@@ -46,7 +47,7 @@ if (Test-Path -LiteralPath $claudeInstall) {
 Write-Host ""
 
 # 3. Antigravity CLI symlinks
-Write-Host "[3/4] Installing Antigravity CLI configuration..."
+Write-Host "[3/5] Installing Antigravity CLI configuration..."
 $geminiInstall = Join-Path $scriptDir 'gemini\install.ps1'
 if (Test-Path -LiteralPath $geminiInstall) {
     & $geminiInstall -DryRun:$DryRun
@@ -55,8 +56,18 @@ if (Test-Path -LiteralPath $geminiInstall) {
 }
 Write-Host ""
 
-# 4. Antigravity CLI statusLine
-Write-Host "[4/4] Configuring Antigravity CLI statusLine..."
+# 4. Codex CLI symlinks
+Write-Host "[4/5] Installing Codex CLI configuration..."
+$codexInstall = Join-Path $scriptDir 'codex\install.ps1'
+if (Test-Path -LiteralPath $codexInstall) {
+    & $codexInstall -DryRun:$DryRun
+} else {
+    Write-Warning "Codex install script not found: $codexInstall"
+}
+Write-Host ""
+
+# 5. Antigravity CLI statusLine
+Write-Host "[5/5] Configuring Antigravity CLI statusLine..."
 $statuslineSetup = Join-Path $scriptDir 'gemini\statusline-setup.ps1'
 if (Test-Path -LiteralPath $statuslineSetup) {
     & $statuslineSetup -DryRun:$DryRun

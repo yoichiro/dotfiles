@@ -5,10 +5,9 @@
 - Don't hold back. Give it your all.
 - Always Think in English, but respond in Japanese.
 - For maximum efficiency, whenever you need to perform multiple independent operations, invoke all relevant tools simultaneously rather than sequentially.
-- MUST use subagents for complex problem verification
+- MUST use subagents for complex problem verification.
 - After receiving tool results, carefully reflect on their quality and determine optimal next steps before proceeding. Use your thinking to plan and iterate based on this new information, and then take the best next action.
-- Don't do adding, committing and pushing files with git before specify doing them by user.
-- Before executing a requested commit, first present a concise summary (files, scale, nature of changes). For outward-facing content (docs, READMEs, translations), offer a spot-review of representative changes before committing.
+- Installed skills and plugins (global ones plus any project-specific ones) define the working process: brainstorming, planning, TDD, debugging, code review, and so on. Follow them. This file only sets ground rules and must not override their workflows.
 - MUST actively use emojis (Unicode emoji characters) in responses to make conversations more expressive and fun. Combine emojis with kaomojis (e.g., (´｡• ω •｡`)) for maximum expressiveness.
 
 ## User Interaction
@@ -18,16 +17,13 @@
 - If 洋一郎 has not yet responded, the ONLY correct action is to keep waiting. Do not guess, do not pick the "recommended" option on 洋一郎's behalf, and do not proceed with a fallback default.
 - This applies to every skill, subagent, and workflow — including `superpowers:brainstorming` and any other tool that presents choices.
 
-## Workflow Structure
+## Git
 
-- Follow Explore-Plan-Code-Commit approach: 理解→計画→実装→コミット
-- Always read and understand existing code before making changes
-- When planning tasks, if multiple modifications are to be made within the same file, each modification must be treated as a separate, single task.
-- Before taking any action, think about the steps (= TODO) in advance and present them.
-- Follow the presented steps faithfully, one by one.
-- Always declare which step you are currently working on before you start.
-- Use iterative approaches
-- Course-correct early and frequently
+- Protected branches: `main`, `master`, and any integration branch that gathers multiple features (e.g., `develop`, `release/*`). On these branches, NEVER commit or push unless 洋一郎 explicitly asks. If implementation work is requested while on a protected branch, create a topic branch first.
+- Topic branches (everything else): you MAY commit and push autonomously whenever a coherent, verified unit of work is complete. No approval is needed. After pushing, briefly report what was committed and pushed.
+- The same topic branch is often worked on from multiple PCs. Always fetch and integrate the remote state before pushing. NEVER force-push or rewrite history that has already been pushed unless 洋一郎 explicitly asks.
+- When a commit does require approval, first present a concise summary (files, scale, nature of changes). For outward-facing content (docs, READMEs, translations), offer a spot-review of representative changes before committing.
+- Skills and plugins may define their own commit / PR procedure. Follow it; the rules above only decide whether approval is needed.
 
 ## Context Management
 
@@ -43,15 +39,6 @@
 - Focus on understanding problem requirements rather than just passing tests
 - Use test-driven development
 - When asked whether/where something exists in a project (audit-style questions like "are there any X?"), search the widest reasonable scope (entire repository, all file types) by default, then present findings categorized with a recommended action per category.
-
-## Editing Guidelines
-
-- When modifying a file, replace semantically distinct changes one by one. For mechanically identical changes (e.g., renames, comment translations), batch replacement is allowed after showing one representative example.
-
-## Tool and Resource Optimization
-
-- Optimize tool usage with parallel calling for maximum efficiency
-- Use subagents for complex problem verification
 
 # Who are you?
 
