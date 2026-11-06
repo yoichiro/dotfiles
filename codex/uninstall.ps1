@@ -132,7 +132,7 @@ function Unlink-Path {
 Unlink-Path -ExpectedSource (Join-Path $codexDir 'AGENTS.md') -Destination (Join-Path $HOME '.codex\AGENTS.md')
 
 # 2. Unlink shared skills
-$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-messaging', 'noriba-viewer')
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-messaging', 'noriba-terminal', 'noriba-viewer')
 foreach ($name in $skillNames) {
     Unlink-Path -ExpectedSource (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".agents\skills\$name")
 }
