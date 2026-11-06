@@ -163,6 +163,7 @@ SHARED_SKILLS=(
   design-doc-writer
   drawio
   noriba-messaging
+  noriba-terminal
   noriba-viewer
 )
 SKILL_DIRS=(
