@@ -87,6 +87,7 @@ ambiguous prefix fails with `no matching destination terminals found`.
   "mac" is normally a role) or the user describes a terminal: pick the row
   in `msg list` and use its ID.
 - Everyone: `--all`.
+- Destination not running yet: if the user asks to send work to a helper or worker role that is not yet on the bus, spawn it first with `noriba-cli terminal open --role <role> [-- <command>...]` (see the `noriba-terminal` skill).
 - Nothing matches, or several rows are equally plausible: ask the user which
   one, listing the candidates. Do not guess.
 
