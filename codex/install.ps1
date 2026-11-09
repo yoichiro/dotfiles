@@ -111,7 +111,7 @@ foreach ($entry in $fileLinks) {
 
 # Shared skills: whole-directory symlinks matching the Unix installer.
 # Linked into $HOME\.agents\skills\<name> as expected by Codex CLI.
-$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-messaging', 'noriba-terminal', 'noriba-viewer')
+$skillNames = @('adr-from-history', 'design-doc-writer', 'drawio', 'noriba-messaging', 'noriba-subagent-driven-development', 'noriba-terminal', 'noriba-viewer')
 foreach ($name in $skillNames) {
     Link-Path -Source (Join-Path $claudeDir "skills\$name") -Destination (Join-Path $HOME ".agents\skills\$name")
 }

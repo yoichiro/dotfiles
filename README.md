@@ -45,7 +45,7 @@ file is never edited, so `git pull` in `~/.zprezto` keeps working.
 | `claude/settings.json` | `~/.claude/settings.json` | Claude Code settings: statusLine, enabled plugins, spinner verbs |
 | `claude/statusline-command.sh` | `~/.claude/statusline-command.sh` | Claude Code status line script (seasonal/hourly emoji, git-aware path) |
 | `claude/commands/back-to-main.md` | `~/.claude/commands/back-to-main.md` | Custom slash command: switch to main, pull, delete previous branch |
-| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-messaging`, `noriba-terminal`, `noriba-viewer`. Managed by Unix `install.sh` and, on Windows, `claude/windows/install.ps1` (`~/.claude/`), `codex/install.ps1` (`~/.agents/`), and `gemini/install.ps1` (`~/.gemini/`). |
+| `claude/skills/<name>/` | `~/.claude/skills/<name>/`, `~/.agents/skills/<name>/`, `~/.gemini/config/skills/<name>/` | Shared skills for Claude Code, Codex CLI, and Antigravity CLI (whole-directory symlinks): `adr-from-history`, `design-doc-writer`, `drawio`, `noriba-messaging`, `noriba-subagent-driven-development`, `noriba-terminal`, `noriba-viewer`. Managed by Unix `install.sh` and, on Windows, `claude/windows/install.ps1` (`~/.claude/`), `codex/install.ps1` (`~/.agents/`), and `gemini/install.ps1` (`~/.gemini/`). |
 | `claude/mcp-setup.sh` | _(executed manually)_ | Bootstrap script: registers all user-scoped MCP servers via `claude mcp add-json`. Tokens read from `~/.envs.local`. Idempotent. |
 | `claude/windows/settings.json` | `~/.claude/settings.json` (Windows) | Same shape as `claude/settings.json` **minus `statusLine`** (uses Claude Code's default on Windows — see `claude/windows/README.md` for why) |
 | `claude/windows/mcp-setup.ps1` | _(executed manually)_ | PowerShell MCP bootstrap. Tokens read from `~/.envs.local.ps1`. Idempotent. |
@@ -95,11 +95,12 @@ directory symlink, so edits and supporting references stay in sync.
 | `design-doc-writer` | Write Japanese design documents grounded in the project source code |
 | `drawio` | Create editable draw.io diagrams and optionally export PNG, SVG, or PDF |
 | `noriba-messaging` | Join, discover, message, and answer other noriba terminals of the same project via `noriba-cli msg` |
+| `noriba-subagent-driven-development` | Execute implementation plans using noriba terminal tabs and P2P messaging for visible, context-preserving, and LAN-distributed subagent development |
 | `noriba-terminal` | Open, manage, and close terminal tabs in the noriba window via `noriba-cli terminal` |
 | `noriba-viewer` | Open or close a Markdown file in the noriba terminal's file viewer via `noriba-cli` |
 
 Run `./install.sh --dry-run` to preview the links, then `./install.sh` to apply
-them. Existing conflicting entries are backed up as usual. Only these six
+them. Existing conflicting entries are backed up as usual. Only these seven
 skill names are managed; other installed skills are left alone.
 
 - **Claude Code:** `~/.claude/skills/<name>/`
@@ -117,7 +118,8 @@ instructions may name Claude Code tools; use the current host's equivalent
 file, search, shell, or delegation tools. `adr-from-history` still requires
 the archived Claude Code logs in the configured Obsidian vault; sharing the
 skill does not add Codex or Antigravity conversation archives. Diagram export
-still requires the draw.io desktop CLI. `noriba-viewer`, `noriba-messaging`, and `noriba-terminal` work
+still requires the draw.io desktop CLI. `noriba-viewer`, `noriba-messaging`,
+`noriba-terminal`, and `noriba-subagent-driven-development` work
 only when the CLI runs inside a noriba terminal, where `noriba-cli` is on `PATH`;
 messaging also needs a passcode set on the noriba project.
 

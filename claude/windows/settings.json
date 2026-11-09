@@ -7,6 +7,7 @@
     "commit": "",
     "pr": ""
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "pwsh -NoProfile -ExecutionPolicy Bypass -File \"C:/Users/yoichiro/.claude/statusline-command.ps1\""
@@ -125,5 +126,6 @@
       "**Org-specific CLIs**: None configured",
       "routine cargo/rustc/clippy/fmt operations under this repo's working tree are standard toolchain use, not org-specific"
     ]
-  }
+  },
+  "skipDangerousModePermissionPrompt": true
 }
