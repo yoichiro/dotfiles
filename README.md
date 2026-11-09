@@ -96,7 +96,7 @@ directory symlink, so edits and supporting references stay in sync.
 | `drawio` | Create editable draw.io diagrams and optionally export PNG, SVG, or PDF |
 | `noriba-messaging` | Join, discover, message, and answer other noriba terminals of the same project via `noriba-cli msg` |
 | `noriba-subagent-driven-development` | Execute implementation plans using noriba terminal tabs and P2P messaging for visible, context-preserving, and LAN-distributed subagent development |
-| `noriba-terminal` | Open and close native terminal tabs in the noriba project window via `noriba-cli terminal open/close` |
+| `noriba-terminal` | Open, manage, and close terminal tabs in the noriba window via `noriba-cli terminal` |
 | `noriba-viewer` | Open or close a Markdown file in the noriba terminal's file viewer via `noriba-cli` |
 
 Run `./install.sh --dry-run` to preview the links, then `./install.sh` to apply
@@ -118,7 +118,8 @@ instructions may name Claude Code tools; use the current host's equivalent
 file, search, shell, or delegation tools. `adr-from-history` still requires
 the archived Claude Code logs in the configured Obsidian vault; sharing the
 skill does not add Codex or Antigravity conversation archives. Diagram export
-still requires the draw.io desktop CLI. `noriba-viewer` and `noriba-messaging` work
+still requires the draw.io desktop CLI. `noriba-viewer`, `noriba-messaging`,
+`noriba-terminal`, and `noriba-subagent-driven-development` work
 only when the CLI runs inside a noriba terminal, where `noriba-cli` is on `PATH`;
 messaging also needs a passcode set on the noriba project.
 
