@@ -7,8 +7,8 @@ allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view goto *), Bash(
 
 # noriba file viewer
 
-noriba is a terminal app with a Markdown / PDF / image / source code viewer pane next
-to each terminal.
+noriba is a terminal app with a Markdown / PDF / image / Mermaid / source code viewer
+pane next to each terminal.
 `noriba-cli` talks to the noriba instance that hosts this terminal, so the
 file shows up right beside the conversation. It is a console command that is
 already on PATH inside noriba (Windows, macOS and WSL alike).
@@ -65,7 +65,11 @@ any letter case. Source files get line numbers, and colours for the bundled
 languages (the header names the language; an unknown one is shown as plain
 text). Images (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.svg`, up to 10 MB)
 open on their own, fitted to the pane; the user zooms and pans them in the
-viewer. An image has no lines or pages: do not give it a `:<line>` / `p.<n>`
+viewer. Mermaid diagram files (`.mmd`, `.mermaid`, up to 10 MB) are drawn as a
+diagram and behave like an image (fitted, zoom and pan); ```` ```mermaid ````
+blocks inside a Markdown file are drawn as diagrams in place, and a diagram
+with a syntax error shows an error banner with its source. An image or a
+Mermaid file has no lines or pages: do not give it a `:<line>` / `p.<n>`
 place and do not `goto` / `find` in it. A file over its size limit
 still opens, but the pane shows a "too large" notice instead of the document -
 say so when you know the file is that big. A file that looks binary (NUL bytes in its first 8 KiB,
@@ -134,7 +138,7 @@ line or page prints the place it went to. Otherwise:
 |---|---|---|
 | 2 | `run this inside a noriba terminal ...` | You (the agent) are not running inside a noriba terminal, so the viewer cannot be reached. Do not retry. |
 | 1 | `noriba-cli: no such file: <path>` | The file does not exist; check the path (maybe offer the closest match). |
-| 1 | `noriba-cli: an image has no lines or pages to address` | You gave an image a line / page (`x.png:12`) or ran `goto` / `find` on one; open it without a place. |
+| 1 | `noriba-cli: an image has no lines or pages to address` | You gave an image or a Mermaid file a line / page (`x.png:12`, `flow.mmd:3`) or ran `goto` / `find` on one; open it without a place. |
 | 1 | `noriba-cli: no file is open in the viewer` | Nothing is open here; open the file first (`view open`). |
 | 1 | `noriba-cli: line 999 is beyond the end of the file (120 lines)` / `page 999 is beyond the last page (120)` | The place does not exist; pick one inside the document. |
 | 1 | `noriba-cli: a PDF is addressed by page (p.3), not by line` / `a Markdown or source file is addressed by line (12), not by page` | Use the other form of the place. |
@@ -143,7 +147,7 @@ line or page prints the place it went to. Otherwise:
 | 1 | `noriba-cli: match 7 does not exist (3 matches)` / `no previous find` / `no more matches (3 of 3)` / `already at the first match` | `--nth` is out of range, there is no earlier find, or you are at the end of the matches. |
 | 1 | `noriba-cli: the PDF is not on screen (switch to this terminal and show the window), so it cannot be searched` | A PDF can be searched only while it is visible; ask the user to switch to this terminal and show the noriba window, then retry. |
 | 0 | `no outline (the PDF has no bookmarks)` (stdout) | Nothing to tell yet: `view find` the chapter title and jump to the heading match (see "Jumping to a place"). |
-| 0 | `no outline (image)` (stdout) | An image has no outline; there is nothing to jump to. |
+| 0 | `no outline (image)` / `no outline (Mermaid diagram)` (stdout) | An image or a Mermaid file has no outline; there is nothing to jump to. |
 | 0 | `no outline (source file)` / `no outline (no headings)` (stdout) | A source file has no outline (read it and `goto` the lines); the Markdown has no headings (use `view find`). |
 | 1 | `noriba-cli: the viewer page did not answer` | The page did not answer in time (a very large PDF); retry once, a second try is usually fast. |
 | 1 | `noriba-cli: this noriba does not support `view goto` (update noriba)` | The running noriba is older than `noriba-cli`; the user needs to update noriba. |

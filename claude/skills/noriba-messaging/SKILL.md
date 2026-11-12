@@ -26,7 +26,7 @@ every machine.
 | Send to one terminal | `noriba-cli msg send <id> "<message>"` |
 | Send to a role | `noriba-cli msg send --role <role> "<message>"` |
 | Send to every terminal | `noriba-cli msg send --all "<message>"` |
-| Leave the bus | `noriba-cli msg leave` |
+| Leave the bus (also forgets the saved join) | `noriba-cli msg leave` |
 
 `--role`, `--desc` and `--wait` take their value as the next word or as
 `--flag=value`; `--auto-enter`, `--raw`, `--no-screen`, `--no-enter` and `--all` take none.
@@ -51,6 +51,11 @@ notification that needs no answer may go out unjoined. Before any send run
 means nothing to do, unless the user wants the role changed or messages must
 now be submitted automatically and `Auto-Enter` is `OFF` (joining again
 replaces the registration).
+
+A join is saved with the terminal and restored when noriba restarts, with the
+same role and options, so a terminal can already be joined although nobody
+ran `msg join` in this session; `msg status` tells. Only `msg leave` (or
+closing the terminal) removes it.
 
 1. **The role must come from the user.** If the request names no role, ask
    which role to use before joining and wait for the answer. Suggest the
