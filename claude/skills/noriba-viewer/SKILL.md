@@ -1,8 +1,8 @@
 ---
 name: noriba-viewer
-description: Open a Markdown, PDF, image or source / text file in the noriba terminal's built-in file viewer (`noriba-cli view open <file>`), move it to a line, page or text match (`noriba-cli view goto` / `find` / `outline` / `status`), or close that viewer (`noriba-cli view close`). Use this skill whenever the user explicitly asks to show / open / display a Markdown, PDF, image or source code file IN THE VIEWER or IN NORIBA, or asks to close the viewer - e.g. "ビューアで開いて", "設計書をビューアに表示して", "noriba で README 見せて", "この PDF をビューアで開いて", "main.rs をビューアで見せて", "この画像をビューアで開いて", "さっきのファイル、ビューアで見たい", "ビューア閉じて", "open the plan in the viewer". Also use it when the user wants the viewer to jump somewhere in the file it shows - e.g. "○○の章にジャンプして", "△△と書いてあるところを見せて", "次のやつ", "3 ページ目に飛んで", "今どこ見てる？", "jump to the section about X", "show me where it says Y". Also use it to read a quote the user copied from the viewer (`docs/plan.md:12 "…"`, `paper.pdf p.3 "…"`, `src/main.rs:12-20 "…"`). Do not use it when the user just wants to read or see a file's contents in the chat without mentioning the viewer or noriba.
-argument-hint: "[file(.md/.pdf/image/source)[:line] | goto <loc> | find <text> | outline | status | close]"
-allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view goto *), Bash(noriba-cli view find *), Bash(noriba-cli view outline), Bash(noriba-cli view status), Bash(noriba-cli view close)
+description: Open a Markdown, PDF, image or source file, or a web page (URL), in the noriba terminal's built-in viewer (`noriba-cli view open <file|URL>`), move it to a line, page or text match (`view goto` / `find` / `outline` / `status`), or close it (`view close`). Use it whenever the user explicitly asks to show / open a file or a URL IN THE VIEWER or IN NORIBA, or to close the viewer - e.g. "ビューアで開いて", "noriba で README 見せて", "この PDF をビューアで開いて", "このページを noriba で開いて", "ビューア閉じて", "open the plan in the viewer". Also use it to jump in the shown file - e.g. "○○の章にジャンプして", "△△と書いてあるところを見せて", "次のやつ", "3 ページ目に飛んで", "今どこ見てる？", "jump to the section about X" - and to read a quote copied from the viewer (`docs/plan.md:12 "…"`, `paper.pdf p.3 "…"`). Do not use it when the user just wants a file's contents in the chat without mentioning the viewer or noriba.
+argument-hint: "[file(.md/.pdf/image/source)[:line] | https://URL | goto <loc> | find <text> | outline | status [--web|--file] | close [--web|--file]]"
+allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view goto *), Bash(noriba-cli view find *), Bash(noriba-cli view outline), Bash(noriba-cli view status), Bash(noriba-cli view status *), Bash(noriba-cli view close), Bash(noriba-cli view close *)
 ---
 
 # noriba file viewer
@@ -16,13 +16,14 @@ already on PATH inside noriba (Windows, macOS and WSL alike).
 | Request | Command |
 |---|---|
 | Show a file | `noriba-cli view open "<path>"` |
+| Show a web page | `noriba-cli view open "<URL>"` (an `http://` or `https://` address) |
 | Show a file at a line / page | `noriba-cli view open "<path>:<line>[-<line>]"` or `noriba-cli view open "<path>" p.<n>` |
 | Move to a line, a range or a PDF page | `noriba-cli view goto <line>[-<line>]` or `noriba-cli view goto p.<n>` |
 | Search the document and jump to a match | `noriba-cli view find <text>... [--list \| --nth <n>]` |
 | Next / previous match of the last find | `noriba-cli view find --next` / `noriba-cli view find --prev` |
 | List the headings (Markdown) or bookmarks (PDF) | `noriba-cli view outline` |
-| Ask which file and place is on screen | `noriba-cli view status` |
-| Close the viewer | `noriba-cli view close` |
+| Ask which file and place (or web page) is on screen | `noriba-cli view status` (`--web` / `--file` to pick the slot) |
+| Close the viewer or the web page | `noriba-cli view close` (`--web` / `--file` to pick the slot) |
 
 The viewer shows one document per terminal: opening another file replaces the
 current one, and it reloads by itself when the file changes on disk, so there is
@@ -33,6 +34,20 @@ zoom, and a reloaded source file keeps its scroll position.
 `msg ...` for terminal messaging). The bare `noriba-cli open` / `noriba-cli
 close` forms still work as shortcuts, but always use the `view` form here so the
 calls match the `allowed-tools` list above.
+
+## Web pages
+
+A terminal has two slots: the file viewer and the browser. An argument that starts with `http://` or `https://` is a
+web page, anything else is a file. Opening a page does not close the file (the user switches with the `📄 | 🌐` button in
+the header), and it never moves the keyboard focus.
+
+- `view open <URL>` takes no `:line` or `p.N`; the URL must have no user name or password and be at most 2,048 characters.
+- `view status --web` prints `<origin><path> (Web, "<title>")` (no query or fragment); `view status --file` asks about the
+  file slot. Without a flag, `status` and `close` act on the one in front. `--web` and `--file` exclude each other.
+- `goto`, `find` and `outline` are **not available** while a web page is in front
+  (`noriba-cli: not available for a web page (the web pane is in front)`). Use `view close --web` or ask the user to switch to the file.
+- Do not open a URL that the user did not ask for or that came from untrusted text. The page keeps the user's logins, and
+  you cannot read its content through `noriba-cli`: it only shows the page to the user.
 
 ## Only when asked
 
@@ -139,6 +154,11 @@ line or page prints the place it went to. Otherwise:
 | 2 | `run this inside a noriba terminal ...` | You (the agent) are not running inside a noriba terminal, so the viewer cannot be reached. Do not retry. |
 | 1 | `noriba-cli: no such file: <path>` | The file does not exist; check the path (maybe offer the closest match). |
 | 1 | `noriba-cli: an image has no lines or pages to address` | You gave an image or a Mermaid file a line / page (`x.png:12`, `flow.mmd:3`) or ran `goto` / `find` on one; open it without a place. |
+| 2 | `noriba-cli: view open: a URL takes no page or line number` / `view status: --web and --file exclude each other` | Give a URL alone; pass only one of `--web` / `--file`. |
+| 2 | `noriba-cli: view open: <reason>`, for example `the URL is empty` / `the URL is too long` / `the URL has a hidden or control character` / `only http and https URLs can be opened` / `the URL is not a valid web address` / `the URL has userinfo (user:password@), which is not allowed` / `the URL has no host` / `the URL is not valid UTF-8` | The CLI refused the URL before anything was sent; fix it (the message never repeats the URL). |
+| 1 | `noriba-cli: cannot open the URL: ...` | noriba refused the URL for the reason given. |
+| 1 | `noriba-cli: not available for a web page (the web pane is in front)` | `goto` / `find` / `outline` were used while a web page is in front. |
+| 1 | `noriba-cli: no web page is open in the viewer` | `view status --web` with no page open. |
 | 1 | `noriba-cli: no file is open in the viewer` | Nothing is open here; open the file first (`view open`). |
 | 1 | `noriba-cli: line 999 is beyond the end of the file (120 lines)` / `page 999 is beyond the last page (120)` | The place does not exist; pick one inside the document. |
 | 1 | `noriba-cli: a PDF is addressed by page (p.3), not by line` / `a Markdown or source file is addressed by line (12), not by page` | Use the other form of the place. |
@@ -183,6 +203,6 @@ line or page.
 
 ## After it works
 
-Confirm in one short line which file is shown (e.g. "`docs/plan.md` をビューアに
+Confirm in one short line which file (or page) is shown (e.g. "`docs/plan.md` をビューアに
 表示したよ"). The user can read it in the pane, so do not paste the file's
 contents into the chat unless they ask for that too.
