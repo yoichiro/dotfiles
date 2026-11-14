@@ -27,6 +27,7 @@ every machine.
 | Send to a role | `noriba-cli msg send --role <role> "<message>"` |
 | Send to every terminal | `noriba-cli msg send --all "<message>"` |
 | Leave the bus (also forgets the saved join) | `noriba-cli msg leave` |
+| Flags and examples of one command | `noriba-cli msg <command> --help` (or `-h`; `noriba-cli msg --help` lists the commands) |
 
 `--role`, `--desc` and `--wait` take their value as the next word or as
 `--flag=value`; `--auto-enter`, `--raw`, `--no-screen`, `--no-enter` and `--all` take none.

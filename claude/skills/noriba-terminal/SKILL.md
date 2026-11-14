@@ -2,7 +2,7 @@
 name: noriba-terminal
 description: Open a new terminal tab in the current noriba project window (`noriba-cli terminal open`) to run helper processes, dev servers, watchers, or AI coding agents, and close them when done (`noriba-cli terminal close <id>`). Use this skill whenever the user asks to open or create a terminal, start a process or agent in another tab, run something where they can see it, spawn a helper or worker, or close a terminal - e.g. "ターミナルを開いて", "別のタブで動かして", "新しいタブでテスト回して", "サーバーを別タブで起動して", "ヘルパーを立ち上げて", "ターミナルを閉じて", "このタブ閉じて", "open a terminal", "run in another tab", "spawn a worker", "start the dev server in a tab", "close the terminal". Also use it when you need to run a long-lived process or delegate work to an auxiliary agent where the user can observe progress, rather than hiding it in a background process.
 argument-hint: "[open [--shell <pwsh|powershell|wsl|wsl:<distro>|login>] [--cwd <path>] [--role <role>] [--close-on-exit] [-- <cmd>...] | close <id>]"
-allowed-tools: Bash(noriba-cli terminal open *), Bash(noriba-cli terminal close *), Bash(noriba-cli term open *), Bash(noriba-cli term close *)
+allowed-tools: Bash(noriba-cli terminal open *), Bash(noriba-cli terminal close *), Bash(noriba-cli term open *), Bash(noriba-cli term close *), Bash(noriba-cli terminal --help), Bash(noriba-cli term --help)
 ---
 
 # noriba terminal management
@@ -20,6 +20,7 @@ noriba is a native terminal app where terminals are organized as tabs inside a s
 | Open, run a command, and close on success | `noriba-cli terminal open --close-on-exit [-- <command> [args...]]` |
 | Open and join messaging bus with a role | `noriba-cli terminal open --role <ROLE> [--desc "<text>"]` |
 | Close a terminal tab by ID or prefix | `noriba-cli terminal close <TERMINAL_ID>` |
+| Flags and examples of one command | `noriba-cli terminal <open\|close> --help` (or `-h`; `noriba-cli terminal --help` lists the commands) |
 
 `noriba-cli term open` and `noriba-cli term close` are available as short aliases.
 

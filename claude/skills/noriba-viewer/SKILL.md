@@ -2,7 +2,7 @@
 name: noriba-viewer
 description: Open a Markdown, PDF, image or source file, or a web page (URL), in the noriba terminal's built-in viewer (`noriba-cli view open <file|URL>`), move it to a line, page or text match (`view goto` / `find` / `outline` / `status`), or close it (`view close`). Use it whenever the user explicitly asks to show / open a file or a URL IN THE VIEWER or IN NORIBA, or to close the viewer - e.g. "ビューアで開いて", "noriba で README 見せて", "この PDF をビューアで開いて", "このページを noriba で開いて", "ビューア閉じて", "open the plan in the viewer". Also use it to jump in the shown file - e.g. "○○の章にジャンプして", "△△と書いてあるところを見せて", "次のやつ", "3 ページ目に飛んで", "今どこ見てる？", "jump to the section about X" - and to read a quote copied from the viewer (`docs/plan.md:12 "…"`, `paper.pdf p.3 "…"`). Do not use it when the user just wants a file's contents in the chat without mentioning the viewer or noriba.
 argument-hint: "[file(.md/.pdf/image/source)[:line] | https://URL | goto <loc> | find <text> | outline | status [--web|--file] | close [--web|--file]]"
-allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view goto *), Bash(noriba-cli view find *), Bash(noriba-cli view outline), Bash(noriba-cli view status), Bash(noriba-cli view status *), Bash(noriba-cli view close), Bash(noriba-cli view close *)
+allowed-tools: Bash(noriba-cli view open *), Bash(noriba-cli view goto *), Bash(noriba-cli view find *), Bash(noriba-cli view outline), Bash(noriba-cli view status), Bash(noriba-cli view status *), Bash(noriba-cli view close), Bash(noriba-cli view close *), Bash(noriba-cli view --help), Bash(noriba-cli view outline --help)
 ---
 
 # noriba file viewer
@@ -24,6 +24,7 @@ already on PATH inside noriba (Windows, macOS and WSL alike).
 | List the headings (Markdown) or bookmarks (PDF) | `noriba-cli view outline` |
 | Ask which file and place (or web page) is on screen | `noriba-cli view status` (`--web` / `--file` to pick the slot) |
 | Close the viewer or the web page | `noriba-cli view close` (`--web` / `--file` to pick the slot) |
+| Flags and examples of one command | `noriba-cli view <command> --help` (or `-h`; `noriba-cli view --help` lists the commands) |
 
 The viewer shows one document per terminal: opening another file replaces the
 current one, and it reloads by itself when the file changes on disk, so there is
