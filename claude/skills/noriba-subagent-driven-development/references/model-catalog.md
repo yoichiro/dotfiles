@@ -30,10 +30,10 @@ Before selecting a CLI engine, determine the data confidentiality requirements:
 - **Worker (Fast / Cheap)**: `--model haiku` (`claude-haiku-5-5`) with `--effort low`
 - **Worker (Standard / Balanced)**: `--model sonnet` (`claude-sonnet-5-5`) with `--effort low`
 - **Reviewer / Lead (Capable)**: `--model opus` (`claude-opus-5-5`) with `--effort high`
-- **Permissions Bypass**: `--dangerously-skip-permissions`
+- **Permission Mode**: `--permission-mode auto`. Do not use `--dangerously-skip-permissions`: when the controller itself runs in auto mode, the auto mode classifier blocks a launch with that flag as undermining oversight, and no subagent starts. Auto mode lets workers and reviewers run to completion without stopping for permission prompts.
 - **Full Invocations**:
-  - Worker: `claude --model sonnet --effort low --dangerously-skip-permissions`
-  - Reviewer: `claude --model opus --effort high --dangerously-skip-permissions`
+  - Worker: `claude --model sonnet --effort low --permission-mode auto`
+  - Reviewer: `claude --model opus --effort high --permission-mode auto`
 
 ### Antigravity CLI (`agy`) *(Non-Work Only)*
 - **Worker (Fast / Cheap)**: `--model gemini-3.8-flash-low` with `--effort low`

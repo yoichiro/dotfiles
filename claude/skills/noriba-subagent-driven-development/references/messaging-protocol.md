@@ -17,7 +17,7 @@ Subagents are activated in a decoupled two-step procedure:
    ```bash
    TID=$(noriba-cli terminal open --background --role <ROLE> -- <ENGINE_CMD>)
    ```
-   The agent engine is spawned in interactive mode with its permission bypass and model flags, without any initial prompt argument. `noriba-cli terminal open` prints the created terminal UUID to standard output.
+   The agent engine is spawned in interactive mode with its permission flag (`--permission-mode auto` for Claude Code, the engine's own bypass flag for Antigravity CLI and Codex) and model flags, without any initial prompt argument. `noriba-cli terminal open` prints the created terminal UUID to standard output.
 2. **Bootstrap Prompt Delivery**:
    ```bash
    noriba-cli msg send "$TID" "<BOOTSTRAP_PROMPT>"
@@ -60,4 +60,4 @@ Because interactive AI CLI engines (Claude Code, Antigravity CLI, OpenAI Codex) 
 4. **Sub-Controller Teardown**:
    The controller must execute `noriba-cli terminal close "$SUB_CONTROLLER_TID"` immediately upon receiving `Status: SUB-PLAN COMPLETE`.
 5. **Phase 3 Terminal Cleanup Sweep**:
-   Before presenting human integration choices in Phase 3, the controller must list all active terminals via `noriba-cli terminal list` and forcefully close any remaining auxiliary terminals (`noriba-cli terminal close <TID>`), guaranteeing that only the primary controller terminal remains open.
+   `noriba-cli terminal` has only `open` and `close`, so the controller records the `<TID> <role>` of every terminal it opens in `.superpowers/sdd/<plan>/terminals.txt` and removes the line when it closes that terminal. Before presenting human integration choices in Phase 3, the controller closes every terminal still in that file (`noriba-cli terminal close <TID>`, treating `terminal not found: <TID>` as already closed), guaranteeing that only the primary controller terminal remains open.

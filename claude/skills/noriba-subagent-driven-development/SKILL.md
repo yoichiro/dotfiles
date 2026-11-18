@@ -135,6 +135,21 @@ To eliminate operating system command line length limits and shell escaping erro
 - **Review Findings**: `.superpowers/sdd/<plan-name>/task-<id>-review-findings.md` (Line-by-line defect details and suggested remedies).
 - **Final Whole-Branch Review Brief**: `.superpowers/sdd/<plan-name>/final-review-brief.md` (Branch diff range, commit log, spec links).
 - **Final Review Findings**: `.superpowers/sdd/<plan-name>/final-review-findings.md` (Whole-branch defect list and remedies).
+- **Terminal Registry**: `.superpowers/sdd/<plan-name>/terminals.txt` (One `<TID> <role>` line per auxiliary terminal the controller opened and has not closed yet).
+
+### Terminal Registry
+
+`noriba-cli terminal` has only `open` and `close`, so the controller cannot ask noriba which tabs it left open. It keeps its own record instead: every `noriba-cli terminal open` in this skill (worker, reviewers, sub-controller) is followed by registering the captured TID, and every `noriba-cli terminal close` by unregistering it. The controller's own terminal is never in the registry, so an empty registry means only the controller remains.
+
+```bash
+REG=.superpowers/sdd/<plan-name>/terminals.txt
+# After: WORKER_TID=$(noriba-cli terminal open --background --role "worker-<id>" ...)
+echo "$WORKER_TID worker-<id>" >> "$REG"
+# After: noriba-cli terminal close "$WORKER_TID"
+grep -v "^$WORKER_TID " "$REG" > "$REG.tmp"; mv "$REG.tmp" "$REG"
+```
+
+A `noriba-cli terminal close` that fails with `terminal not found: <TID>` means the tab is already gone (closed by hand or exited); unregister it like a successful close. Any other error leaves the entry in place and is reported to the human partner.
 
 ### Normalized Status Strings
 
@@ -155,7 +170,7 @@ Because messaging events over PTY paste may occasionally be dropped, delayed, or
 1. **Check Interval**: 60 seconds.
 2. **Monitored Targets**:
    - Primary Disk Artifact: Presence and last-modified timestamp of the relevant handoff artifact (`task-<id>-report.md`, `task-<id>-review-findings.md`, `final-review-findings.md`).
-   - Terminal & Bus Liveliness: Verification that the subagent terminal is still registered on `noriba-cli msg list` and active in `noriba-cli terminal list`.
+   - Terminal & Bus Liveliness: Verification that the subagent's terminal ID still appears in the `ID` column of `noriba-cli msg list`. Subagent tabs are opened with `--role`, so they stay joined to the bus until their tab closes; a TID that has vanished from `msg list` while its handoff file shows no status line means the tab is gone. (`noriba-cli terminal` has only `open` and `close`; there is no `terminal list`.)
 3. **Autonomous Auto-Detection Fallback**:
    - If the disk artifact contains an explicit terminal status envelope (`Status: READY_FOR_REVIEW`, `Status: PASS`, `Status: CHANGES_REQUESTED`), the controller treats the handoff as fully complete **even if no message was received on the bus**, immediately advancing to the next workflow step.
 4. **Timeout Escalation**:
@@ -202,7 +217,8 @@ Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
   ```markdown
   # SDD Ledger — plan: <plan-file-path>
   ```
-- **Compaction Recovery**: If resuming after context compaction or session interruption, read `progress.md`. Tasks marked complete do not need re-dispatch. Any controller decisions overriding ambiguities or defects must be recorded in the ledger as:
+- Create an empty Terminal Registry at `.superpowers/sdd/<plan-name>/terminals.txt` (keep it when resuming; it lists the tabs still open from before).
+- **Compaction Recovery**: If resuming after context compaction or session interruption, read `progress.md` and `terminals.txt`. Tasks marked complete do not need re-dispatch. Any controller decisions overriding ambiguities or defects must be recorded in the ledger as:
   ```markdown
   Task <N>: Ruling: <decision> — <reason> — <cost if wrong>
   ```
@@ -213,6 +229,7 @@ Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
   ```bash
   noriba-cli msg join --role controller --auto-enter
   ```
+- Always join with `--auto-enter`: status messages from subagents (`Status: READY_FOR_REVIEW`, `Status: PASS`, ...) are then pasted and submitted at once, so they wake the controller without anyone pressing Enter. If `msg status` shows the controller joined with `Auto-Enter` `OFF`, join again with the command above (joining again replaces the registration).
 
 #### Step 0.5: Discover Topology & Node Registry
 - Run `noriba-cli msg list` to detect active peers on the LAN.
@@ -246,7 +263,7 @@ Determine whether the task is executed locally or delegated remotely:
   *Step A: Bare Process Launch*
   - Claude Code:
     ```bash
-    WORKER_TID=$(noriba-cli terminal open --background --role "worker-<id>" --desc "Worker Task <id>" -- claude --model sonnet --effort low --dangerously-skip-permissions)
+    WORKER_TID=$(noriba-cli terminal open --background --role "worker-<id>" --desc "Worker Task <id>" -- claude --model sonnet --effort low --permission-mode auto)
     ```
   - Antigravity CLI (Non-Work Only):
     ```bash
@@ -256,6 +273,8 @@ Determine whether the task is executed locally or delegated remotely:
     ```bash
     WORKER_TID=$(noriba-cli terminal open --background --role "worker-<id>" --desc "Worker Task <id>" -- codex -m gpt-6-sol -c reasoning_effort="low" --dangerously-bypass-approvals-and-sandbox)
     ```
+
+  Register the captured TID at once (`echo "$WORKER_TID worker-<id>" >> .superpowers/sdd/<plan-name>/terminals.txt`), as for every terminal this skill opens (see [Terminal Registry](#terminal-registry)).
 
   *Step B: Prompt Delivery via Messaging*
   ```bash
@@ -288,7 +307,7 @@ If the worker sends `Status: BLOCKED - <reason>`, investigate the blocker, resol
    *Step A: Bare Process Launch*
    - Claude Code:
      ```bash
-     REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-spec-<id>" --desc "Spec Reviewer Task <id>" -- claude --model opus --effort high --dangerously-skip-permissions)
+     REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-spec-<id>" --desc "Spec Reviewer Task <id>" -- claude --model opus --effort high --permission-mode auto)
      ```
    - Antigravity CLI (Non-Work Only):
      ```bash
@@ -331,7 +350,7 @@ If the worker sends `Status: BLOCKED - <reason>`, investigate the blocker, resol
    *Step A: Bare Process Launch*
    - Claude Code:
      ```bash
-     REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-quality-<id>" --desc "Quality Reviewer Task <id>" -- claude --model opus --effort high --dangerously-skip-permissions)
+     REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-quality-<id>" --desc "Quality Reviewer Task <id>" -- claude --model opus --effort high --permission-mode auto)
      ```
    - Antigravity CLI (Non-Work Only):
      ```bash
@@ -371,10 +390,7 @@ If the worker sends `Status: BLOCKED - <reason>`, investigate the blocker, resol
    ```bash
    noriba-cli terminal close "$WORKER_TID"
    ```
-2. Verify that no stray reviewer tabs remain open:
-   ```bash
-   noriba-cli terminal list
-   ```
+2. Verify that no stray tabs of this task remain open: unregister the worker (see [Terminal Registry](#terminal-registry)), then close every entry still in `.superpowers/sdd/<plan-name>/terminals.txt` with the sweep in [Step 3.1](#step-31-terminal-cleanup-sweep). The registry must be empty afterwards.
 3. Append completion record to `.superpowers/sdd/<plan-name>/progress.md`:
    ```markdown
    Task <N>: complete (commits <base7>..<head7>, review clean)
@@ -421,7 +437,7 @@ Check if the Implementation Plan or Design Spec declares `Security Review: Requi
 - **If Required**:
   1. Spawn a dedicated, isolated Security Reviewer tab using `prompts/security-reviewer-prompt.md`, capturing its terminal ID:
      ```bash
-     SECURITY_REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-security" --desc "Security Reviewer" -- claude --model opus --effort high --dangerously-skip-permissions)
+     SECURITY_REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-security" --desc "Security Reviewer" -- claude --model opus --effort high --permission-mode auto)
      ```
   2. Deliver review prompt via `noriba-cli msg send`:
      ```bash
@@ -446,7 +462,7 @@ Spawn an isolated reviewer tab with an advanced reasoning model (`opus --effort 
 *Step A: Process Launch*
 - Claude Code:
   ```bash
-  FINAL_REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-final" --desc "Whole-Branch Reviewer" -- claude --model opus --effort high --dangerously-skip-permissions)
+  FINAL_REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-final" --desc "Whole-Branch Reviewer" -- claude --model opus --effort high --permission-mode auto)
   ```
 - Antigravity CLI (Non-Work Only):
   ```bash
@@ -495,15 +511,22 @@ Once the whole-branch review passes cleanly:
 
 #### Step 3.1: Terminal Cleanup Sweep
 Perform an active terminal cleanup sweep to ensure no auxiliary worker or reviewer tabs remain:
-1. List all active terminals in the noriba workspace:
+1. Close every auxiliary worker, reviewer, or sub-controller terminal still in the [Terminal Registry](#terminal-registry), treating `terminal not found` as already closed:
    ```bash
-   noriba-cli terminal list
+   REG=.superpowers/sdd/<plan-name>/terminals.txt
+   : > "$REG.tmp"
+   while read -r TID ROLE; do
+     [ -n "$TID" ] || continue
+     if ! OUT=$(noriba-cli terminal close "$TID" 2>&1 < /dev/null); then
+       case "$OUT" in
+         *"terminal not found"*) ;;  # already closed
+         *) echo "$TID $ROLE" >> "$REG.tmp"; echo "close failed: $TID ($ROLE): $OUT" ;;
+       esac
+     fi
+   done < "$REG"
+   mv "$REG.tmp" "$REG"
    ```
-2. Verify that **ONLY the primary controller terminal** remains open.
-3. If any auxiliary worker, reviewer, or sub-controller terminals are still active, forcefully close them:
-   ```bash
-   noriba-cli terminal close <TID>
-   ```
+2. Verify that the registry is empty, so **ONLY the primary controller terminal** remains open. If an entry stays because its close failed for another reason, report it to the human partner with the error.
    Never leave extra tabs open when presenting final choices to the human partner.
 
 #### Step 3.2: Summarize Rulings
@@ -575,7 +598,7 @@ For large, multi-area initiatives, the Root Controller can delegate entire sub-p
 2. **Sub-Controller Dispatch**:
    - Spawn a dedicated sub-controller tab (local or remote) with a capable reasoning model and explicit `--model`, capturing its terminal ID, then deliver its initial instructions via messaging:
      ```bash
-     SUB_CONTROLLER_TID=$(noriba-cli terminal open --background --role "controller-<area>" --desc "Area Lead <area>" -- claude --model sonnet --effort medium --dangerously-skip-permissions)
+     SUB_CONTROLLER_TID=$(noriba-cli terminal open --background --role "controller-<area>" --desc "Area Lead <area>" -- claude --model sonnet --effort medium --permission-mode auto)
      noriba-cli msg send "$SUB_CONTROLLER_TID" "<lead-bootstrap>"
      ```
 3. **Sub-Controller Autonomous Execution**:
@@ -603,7 +626,7 @@ For large, multi-area initiatives, the Root Controller can delegate entire sub-p
 6. **Zero Bare Subagent Invariant**: Subagents must NEVER be spawned without an explicit `--model <MODEL>` flag. Omitting the model flag or falling back to unconstrained host defaults is strictly prohibited.
 7. **Privacy Boundary Compliance**: When executing work-related tasks, never use CLI tools or subscription accounts (such as consumer Google AI Pro) where user prompts are trained on.
 8. **Zero Autonomous Merge Invariant**: Never autonomously merge pull requests into `main` or protected branches without explicit human direction. All integration decisions belong exclusively to the human partner.
-9. **Strict Lifecycle Teardown Invariant**: Reviewer terminals must be closed via `noriba-cli terminal close "$REVIEWER_TID"` immediately upon verdict (`PASS` or `CHANGES_REQUESTED`). Worker terminals must be closed via `noriba-cli terminal close "$WORKER_TID"` upon completing Stage 2 review. The controller must never rely on `--close-on-exit` alone, and must ensure only the primary controller terminal remains open upon entering Phase 3.
+9. **Strict Lifecycle Teardown Invariant**: Reviewer terminals must be closed via `noriba-cli terminal close "$REVIEWER_TID"` immediately upon verdict (`PASS` or `CHANGES_REQUESTED`). Worker terminals must be closed via `noriba-cli terminal close "$WORKER_TID"` upon completing Stage 2 review. The controller must never rely on `--close-on-exit` alone, records every terminal it opens in the [Terminal Registry](#terminal-registry), and must ensure the registry is empty (only the primary controller terminal remains open) upon entering Phase 3.
 10. **Direct Terminal ID Targeting Invariant**: Message delivery to subagents must use the captured terminal UUID (`noriba-cli msg send "$TID"`) rather than `--role <ROLE>` to eliminate multi-tab collisions and ghost tabs.
 11. **Active Watchdog Invariant**: The controller must never wait passively indefinitely for subagent messages. It must actively poll disk artifacts (`task-<id>-report.md`, findings files) at 60-second intervals, auto-advance upon detecting definitive status lines, and escalate after 5 minutes of total inactivity.
 
