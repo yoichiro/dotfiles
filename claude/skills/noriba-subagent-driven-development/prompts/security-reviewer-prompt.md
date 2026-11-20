@@ -9,17 +9,17 @@ Your role: rigorously audit the whole-branch diff (`MERGE_BASE..HEAD`) for secur
 
 1. Read the security review brief at: `<BRIEF_PATH>` (contains `MERGE_BASE`, `HEAD`, branch stats, design spec, and security criteria).
 2. Read the Design Spec at: `<SPEC_PATH>` (specifically the "Security Impact Assessment" section) and Implementation Plan at: `<PLAN_PATH>`.
-3. Read `.agents/rules/invariants.md` (specifically Subsystems 2, 7, 10, 11, and 12).
+3. Read the Project Profile at: `<PROFILE_PATH>`, the rule files it lists, and every rule or invariant section named under `security_focus`.
 4. Inspect the entire branch diff:
    ```bash
    git diff <MERGE_BASE>..<HEAD>
    ```
-5. Rigorously evaluate critical security vectors:
-   - **IPC & Permissions**: Are Named Pipes / Unix domain sockets protected with explicit DACL/SDDL or strict POSIX permissions (`0600`)? Are incoming serialized payloads validated before processing?
-   - **Shell & PTY Execution**: Are command arguments properly escaped? Is there any possibility of command injection or malicious environment variable injection?
-   - **P2P Cryptography & Messaging**: Are cryptographic nonces strictly monotonic or cryptographically random without reuse? Are AEAD tags validated? Are message MACs checked before decryption?
-   - **WebView2 & File Viewer**: Are local file paths sanitized against directory traversal (`../`)? Are external navigation, script injections, and untrusted protocols strictly blocked?
-   - **Terminal Links & Escapes**: Does path canonicalization strip hidden Unicode/control characters? Are OSC 8 / OSC 7501 handlers protected against spoofing?
+5. Rigorously evaluate the threats the spec declares and the project's `security_focus`, then every general vector below that the diff touches:
+   - **Local IPC & Permissions**: Are sockets, named pipes, ports and files restricted to the intended user (explicit ACLs or strict POSIX modes)? Are incoming serialized payloads validated before processing?
+   - **Command & Shell Execution**: Are command arguments escaped or passed as argument vectors? Is there any possibility of command, argument, or environment variable injection?
+   - **Cryptography & Authentication**: Are nonces never reused? Are MACs / AEAD tags verified before decrypted data is used? Are keys and secrets kept out of logs and error messages?
+   - **Paths & Untrusted Content**: Are paths canonicalized and checked against directory traversal (`../`, symlinks)? Is untrusted content rendered (HTML, Markdown, webviews) kept from running scripts, navigating externally, or reaching local files?
+   - **Control & Escape Sequences**: Can untrusted text smuggle control characters, escape sequences, or hidden Unicode into terminals, logs, or UI?
    - **Memory & Resource Safety**: Are there unbounded memory allocations, unchecked buffer growth, or potential resource exhaustion vectors?
 6. Verdict:
    **MANDATORY**: You MUST record your definitive status line at `<FINDINGS_PATH>` so the controller's active watchdog can detect completion from disk:

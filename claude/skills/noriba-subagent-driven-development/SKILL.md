@@ -2,12 +2,14 @@
 name: noriba-subagent-driven-development
 description: "Execute implementation plans using noriba terminal tabs (noriba-cli terminal open/close) and P2P messaging (noriba-cli msg send) for visible, context-preserving, and LAN-distributed subagent development."
 argument-hint: "<plan-file-path>"
-allowed-tools: Bash(noriba-cli *), Bash(cargo *), Bash(git *)
+allowed-tools: Bash(noriba-cli *), Bash(git *), Bash(gh *)
 ---
 
 # noriba Subagent-Driven Development
 
 `noriba-subagent-driven-development` executes software implementation plans by orchestrating autonomous subagents (implementers and reviewers) inside native **noriba** terminal tabs. It leverages noriba's native terminal lifecycle management (`noriba-cli terminal open/close`) and inter-terminal peer-to-peer encrypted messaging (`noriba-cli msg send`).
+
+The skill is project-agnostic: it works in any repository opened in a noriba terminal, whatever its language or toolchain. Everything specific to the project being built (verification commands, coding conventions, rule files, security focus, QA artifacts, PR conventions) is discovered from that project's own instructions in Phase 0 and recorded in a **Project Profile** that every subagent reads; nothing project-specific is hard-coded here.
 
 ---
 
@@ -80,7 +82,7 @@ sequenceDiagram
     Note over Controller: Phase 2: Final Whole-Branch Review
     Controller->>Reviewer: noriba-cli terminal open --background (capture FINAL_REVIEWER_TID)
     Controller->>Reviewer: noriba-cli msg send "$FINAL_REVIEWER_TID" (MERGE_BASE..HEAD diff & brief)
-    Note over Reviewer: Holistic architecture, QA manifests, cross-platform checks
+    Note over Reviewer: Holistic architecture, project rules & verification gates
     Reviewer->>Controller: msg send (Status: PASS - whole-branch)
     Controller->>Reviewer: noriba-cli terminal close "$FINAL_REVIEWER_TID"
 
@@ -96,12 +98,12 @@ sequenceDiagram
 | Role | Responsibility | Execution Environment |
 | :--- | :--- | :--- |
 | **Root Controller** | Overall plan orchestration, topology discovery, node registry, task dispatching, whole-branch review, and human integration gate. | Primary interactive shell in noriba. |
-| **Sub-Controller (Area Lead)** | Milestone or subsystem sub-plan coordination (e.g. platform-specific subsystem or major crate). | Dedicated controller tab on local or remote node. |
-| **Implementer (Worker)** | Test-driven implementation of a single task, cross-platform checks, and report generation. | Long-running terminal tab (kept open during fix loops). |
+| **Sub-Controller (Area Lead)** | Milestone or subsystem sub-plan coordination (e.g. platform-specific subsystem or major module). | Dedicated controller tab on local or remote node. |
+| **Implementer (Worker)** | Test-driven implementation of a single task, the Project Profile's verification commands, and report generation. | Long-running terminal tab (kept open during fix loops). |
 | **Spec Compliance Reviewer** | Verification that code strictly adheres to requirements in task brief and design spec. | Fresh, isolated terminal tab (closed after review). |
-| **Code Quality Reviewer** | Verification of code structure, style, invariants, safety rules, and tests. | Fresh, isolated terminal tab (closed after review). |
-| **Security Reviewer** | (Conditional) Verification of IPC DACL, shell escaping, crypto nonces, WebView file isolation, and canonical paths when declared in spec/plan. | Fresh, isolated terminal tab with advanced reasoning model. |
-| **Whole-Branch Reviewer** | Holistic evaluation of entire branch diff (`MERGE_BASE..HEAD`), architectural cohesion, QA manifests, and cross-platform builds. | Fresh, isolated terminal tab with advanced reasoning model. |
+| **Code Quality Reviewer** | Verification of code structure, tests, and the project's conventions, invariants and safety rules. | Fresh, isolated terminal tab (closed after review). |
+| **Security Reviewer** | (Conditional, when the spec or plan requires it) Audit of the branch diff against the threats the spec declares and the Project Profile's security focus. | Fresh, isolated terminal tab with advanced reasoning model. |
+| **Whole-Branch Reviewer** | Holistic evaluation of entire branch diff (`MERGE_BASE..HEAD`), architectural cohesion, and every verification gate in the Project Profile. | Fresh, isolated terminal tab with advanced reasoning model. |
 
 ---
 
@@ -129,13 +131,33 @@ For complete CLI configuration options and engine flags, see the [Model Catalog 
 
 To eliminate operating system command line length limits and shell escaping errors, all substantive task handoffs rely on disk-backed pointer Markdown files under `.superpowers/sdd/<plan-name>/`:
 
+- **Project Profile**: `.superpowers/sdd/<plan-name>/project-profile.md` (The project's rule files, verification commands, conventions, security focus, QA artifacts and PR conventions, discovered in Step 0.2).
 - **Progress Ledger**: `.superpowers/sdd/<plan-name>/progress.md` (Ledger of completed tasks, commit hashes, and controller rulings).
 - **Task Brief**: `.superpowers/sdd/<plan-name>/task-<id>-brief.md` (Scope, requirements, interfaces, files, assertions).
 - **Execution Report**: `.superpowers/sdd/<plan-name>/task-<id>-report.md` (Files modified, unit test outputs, commit IDs).
 - **Review Findings**: `.superpowers/sdd/<plan-name>/task-<id>-review-findings.md` (Line-by-line defect details and suggested remedies).
 - **Final Whole-Branch Review Brief**: `.superpowers/sdd/<plan-name>/final-review-brief.md` (Branch diff range, commit log, spec links).
 - **Final Review Findings**: `.superpowers/sdd/<plan-name>/final-review-findings.md` (Whole-branch defect list and remedies).
+- **Security Review Findings**: `.superpowers/sdd/<plan-name>/security-review-findings.md` (Vulnerability findings and the security verdict, when Step 2.2 runs).
 - **Terminal Registry**: `.superpowers/sdd/<plan-name>/terminals.txt` (One `<TID> <role>` line per auxiliary terminal the controller opened and has not closed yet).
+
+### Prompt Placeholders
+
+Each bootstrap message names the prompt contract to follow and gives the concrete value of every placeholder that contract uses:
+
+| Placeholder | Value |
+| :--- | :--- |
+| `<PROFILE_PATH>` | `.superpowers/sdd/<plan-name>/project-profile.md` |
+| `<BRIEF_PATH>` | `task-<id>-brief.md`, or `final-review-brief.md` for the whole-branch and security reviews |
+| `<SPEC_PATH>` / `<PLAN_PATH>` | The design spec and implementation plan read in Step 0.2 |
+| `<REPORT_PATH>` | `task-<id>-report.md` |
+| `<FINDINGS_PATH>` | `task-<id>-review-findings.md`, `final-review-findings.md`, or `security-review-findings.md` |
+| `<LEDGER_PATH>` | `progress.md` |
+| `<TASK_ID>` / `<ROUND>` | The task id and the review round |
+| `<MERGE_BASE>` / `<HEAD>` | The commits recorded in `final-review-brief.md` |
+| `<CONTROLLER_ROLE>` | The controller's bus role (`controller`, or `controller-<area>` for a sub-controller) |
+
+All paths above are under `.superpowers/sdd/<plan-name>/` unless stated otherwise.
 
 ### Terminal Registry
 
@@ -160,16 +182,18 @@ All communications over `noriba-cli msg` must conform to normalized status envel
 - `Status: CHANGES_REQUESTED - <task-id> (<Review-Stage>, Round <n>)`: Reviewer signals defects were identified and recorded.
 - `Status: PASS - whole-branch`: Whole-Branch Reviewer signals branch diff satisfies all specs and invariants.
 - `Status: CHANGES_REQUESTED - whole-branch`: Whole-Branch Reviewer signals branch-level defects identified.
+- `Status: PASS - security`: Security Reviewer signals the branch diff passed the security review.
+- `Status: CHANGES_REQUESTED - security`: Security Reviewer signals vulnerabilities were identified and recorded.
 - `Status: SUB-PLAN COMPLETE - <area>`: Sub-Controller signals that all tasks in its delegated scope are verified and merged.
 - `Status: BLOCKED - <reason>`: Subagent signals an unrecoverable environment or dependency failure.
 
 ### Active File-Driven Watchdog Loop
 
-Because messaging events over PTY paste may occasionally be dropped, delayed, or fail to wake an idle parent process, the controller must NEVER rely solely on passive event reception. While awaiting subagent completion (worker implementation, Stage 1/2 reviews, whole-branch review), the controller runs an active polling watchdog:
+Because messaging events over PTY paste may occasionally be dropped, delayed, or fail to wake an idle parent process, the controller must NEVER rely solely on passive event reception. While awaiting subagent completion (worker implementation, Stage 1/2 reviews, security review, whole-branch review), the controller runs an active polling watchdog:
 
 1. **Check Interval**: 60 seconds.
 2. **Monitored Targets**:
-   - Primary Disk Artifact: Presence and last-modified timestamp of the relevant handoff artifact (`task-<id>-report.md`, `task-<id>-review-findings.md`, `final-review-findings.md`).
+   - Primary Disk Artifact: Presence and last-modified timestamp of the relevant handoff artifact (`task-<id>-report.md`, `task-<id>-review-findings.md`, `security-review-findings.md`, `final-review-findings.md`).
    - Terminal & Bus Liveliness: Verification that the subagent's terminal ID still appears in the `ID` column of `noriba-cli msg list`. Subagent tabs are opened with `--role`, so they stay joined to the bus until their tab closes; a TID that has vanished from `msg list` while its handoff file shows no status line means the tab is gone. (`noriba-cli terminal` has only `open` and `close`; there is no `terminal list`.)
 3. **Autonomous Auto-Detection Fallback**:
    - If the disk artifact contains an explicit terminal status envelope (`Status: READY_FOR_REVIEW`, `Status: PASS`, `Status: CHANGES_REQUESTED`), the controller treats the handoff as fully complete **even if no message was received on the bus**, immediately advancing to the next workflow step.
@@ -197,7 +221,7 @@ Before launching any subagent tabs or initializing topology, the Controller MUST
   - Permit `agy` (`gemini-3.8-flash-low`, `gemini-4-argon-high`), `claude`, and `codex`.
 - **Engine Decoupling**: The child subagent CLI engine is chosen independently from the parent controller (e.g. an Antigravity controller can freely dispatch Claude Code subagents).
 
-Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
+Create the storage directory `.superpowers/sdd/<plan-name>/` and make sure Git ignores it: if `git check-ignore -q .superpowers/sdd` fails, ask the human partner whether to add `.superpowers/` to `.gitignore` (or `.git/info/exclude`) before writing anything there, so scratch files are never committed. Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
 ```markdown
 # SDD Environment
 - privacy_mode: work | non-work
@@ -206,19 +230,32 @@ Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
 - reviewer_model: <exact-model-string>
 ```
 
-#### Step 0.2: Read Specifications
-- Read the implementation plan file (`<plan-file-path>`).
-- Read the referenced Design Spec under `docs/superpowers/specs/`.
-- Read `AGENTS.md` and relevant rules under `.agents/rules/`.
+#### Step 0.2: Read Specifications & Build the Project Profile
+- Read the implementation plan file (`<plan-file-path>`) and the design spec it references (wherever the plan links it).
+- Read the project's agent instructions: `CLAUDE.md` and `AGENTS.md` at the repository root (and in the directories the plan touches), plus every rule or convention file they point to. Also consult `CONTRIBUTING.md`, the README's development section, and build / CI files (`package.json` scripts, `Makefile`, `justfile`, `.github/workflows/`, `.cargo/config.toml` aliases, ...) when the instructions do not name the commands.
+- Write the Project Profile at `.superpowers/sdd/<plan-name>/project-profile.md`, copying exact commands and paths from those files:
+  ```markdown
+  # Project Profile
+  - base_branch: <branch the topic branch will merge into, from the plan or `git symbolic-ref --short refs/remotes/origin/HEAD`; e.g. main>
+  - rules: <instruction and rule files every subagent must read, e.g. CLAUDE.md, AGENTS.md, docs/rules/*.md>
+  - verify: <exact verification commands, one per line: build, type check, lint, format check, tests, and any doc / manifest linters>
+  - conventions: <coding and commit conventions the rules state, e.g. comment language, commit message format, file size limits, forbidden suppressions>
+  - security_trigger: <how the project's spec or plan marks that a security review is required, e.g. a "Security Review: Required" header; "none stated" if the project has no such marker>
+  - security_focus: <security-sensitive areas and invariant sections the rules name; "none stated" if the project names none>
+  - qa_artifacts: <test manifests, changelogs or docs the project requires to stay in sync with code; "none" if not applicable>
+  - pr_conventions: <PR title / body conventions, e.g. "<Area>: <what>" titles, a "Closes #<N>." line; "none" if not applicable>
+  ```
+- Never invent a command. If the project documents no verification commands, or two sources disagree, ask the human partner which commands are authoritative and wait for the answer before dispatching any subagent.
+- Every brief, and every bootstrap prompt whose contract reads the profile, passes the profile path as `<PROFILE_PATH>` (see [Prompt Placeholders](#prompt-placeholders)).
 
 #### Step 0.3: Initialize Workspace & Progress Ledger
-- Create storage directory: `.superpowers/sdd/<plan-name>/`.
+- Use the storage directory `.superpowers/sdd/<plan-name>/` created in Step 0.1.
 - Initialize progress ledger at `.superpowers/sdd/<plan-name>/progress.md` with:
   ```markdown
   # SDD Ledger — plan: <plan-file-path>
   ```
 - Create an empty Terminal Registry at `.superpowers/sdd/<plan-name>/terminals.txt` (keep it when resuming; it lists the tabs still open from before).
-- **Compaction Recovery**: If resuming after context compaction or session interruption, read `progress.md` and `terminals.txt`. Tasks marked complete do not need re-dispatch. Any controller decisions overriding ambiguities or defects must be recorded in the ledger as:
+- **Compaction Recovery**: If resuming after context compaction or session interruption, read `environment.md`, `project-profile.md`, `progress.md` and `terminals.txt`. Tasks marked complete do not need re-dispatch. Any controller decisions overriding ambiguities or defects must be recorded in the ledger as:
   ```markdown
   Task <N>: Ruling: <decision> — <reason> — <cost if wrong>
   ```
@@ -235,7 +272,7 @@ Record selections in `.superpowers/sdd/<plan-name>/environment.md`:
 - Run `noriba-cli msg list` to detect active peers on the LAN.
 - If remote machines are detected (e.g. a macOS Apple Silicon peer while running on Windows):
   - Probe remote capabilities (OS, CPU architecture, git branch status) via `noriba-cli msg send`.
-  - Construct a Node Registry assigning platform-specific tasks (e.g. macOS Metal/AppKit to the Mac peer, Windows ConPTY/Direct2D to the Windows peer).
+  - Construct a Node Registry assigning platform-specific tasks (e.g. macOS-only code to the Mac peer, Windows-only code to the Windows peer).
   - Activate **Distributed Swarm Mode**.
 - If no remote peers are detected:
   - Activate **Local Fallback Mode** (all workers and reviewers spawn as local noriba tabs).
@@ -253,6 +290,7 @@ Write the disk-backed task brief at `.superpowers/sdd/<plan-name>/task-<id>-brie
 - Target requirements and interfaces.
 - Test scenarios and assertions.
 - Links to relevant spec sections and invariants.
+- The Project Profile path (`.superpowers/sdd/<plan-name>/project-profile.md`) and which of its verification commands apply to this task.
 
 #### Step 1.2: Dispatch Worker Subagent
 Determine whether the task is executed locally or delegated remotely:
@@ -396,11 +434,11 @@ If the worker sends `Status: BLOCKED - <reason>`, investigate the blocker, resol
    Task <N>: complete (commits <base7>..<head7>, review clean)
    ```
 4. Mark task as completed (`- [x]`) in the implementation plan.
-5. Push commits and sync with Pull Request:
-   - If Task 1 was just completed and no PR exists yet, create the draft PR:
+5. Push commits and sync with Pull Request (when the repository is hosted on GitHub and `gh` is available; otherwise only push the branch, or skip this step if there is no remote):
+   - If Task 1 was just completed and no PR exists yet, create the draft PR, following `pr_conventions` in the Project Profile for the title and body (the body links the plan's Issue, e.g. `Closes #<N>.`, when the plan names one):
      ```bash
      git push -u origin <branch>
-     gh pr create --draft --title "<Area>: <what>" --body "Closes #<N>."
+     gh pr create --draft --title "<title>" --body "<body>"
      ```
    - Push task commits to origin:
      ```bash
@@ -423,25 +461,26 @@ After all tasks in the plan have been marked complete in `progress.md`:
 #### Step 2.1: Generate Whole-Branch Review Brief
 1. Determine branch diff boundaries:
    ```bash
-   MERGE_BASE=$(git merge-base origin/main HEAD 2>/dev/null || git merge-base main HEAD)
+   BASE=<base_branch from the Project Profile>
+   MERGE_BASE=$(git merge-base "origin/$BASE" HEAD 2>/dev/null || git merge-base "$BASE" HEAD)
    ```
 2. Write `.superpowers/sdd/<plan-name>/final-review-brief.md`:
    - `MERGE_BASE` and `HEAD` commit hashes.
    - Summarized commit log (`git log --oneline $MERGE_BASE..HEAD`).
    - Changed files and diff statistics (`git diff --stat $MERGE_BASE..HEAD`).
-   - Links to the plan, design spec, and applicable QA manifests (`docs/qa/*.toml`).
+   - Links to the plan, design spec, the Project Profile, and the `qa_artifacts` it lists.
    - Summary of any parked items or rulings recorded in `progress.md`.
 
 #### Step 2.2: Conditional Security Review
-Check if the Implementation Plan or Design Spec declares `Security Review: Required`:
+A security review is required when the Implementation Plan or Design Spec says so in any formatting (the marker named under `security_trigger` in the Project Profile, e.g. `Security Review: Required` or `**Security Review:** Required (Areas: ...)`), or when the human partner asks for one:
 - **If Required**:
-  1. Spawn a dedicated, isolated Security Reviewer tab using `prompts/security-reviewer-prompt.md`, capturing its terminal ID:
+  1. Spawn a dedicated, isolated Security Reviewer tab with the capable reasoning model from `environment.md` (the reviewer invocation of the chosen engine, as in Step 2.3), capturing its terminal ID and registering it in the Terminal Registry:
      ```bash
      SECURITY_REVIEWER_TID=$(noriba-cli terminal open --background --role "reviewer-security" --desc "Security Reviewer" -- claude --model opus --effort high --permission-mode auto)
      ```
-  2. Deliver review prompt via `noriba-cli msg send`:
+  2. Deliver the bootstrap via `noriba-cli msg send`, naming the contract and every placeholder it uses (see [Prompt Placeholders](#prompt-placeholders)):
      ```bash
-     noriba-cli msg send "$SECURITY_REVIEWER_TID" "Execute security review for branch diff $MERGE_BASE..HEAD. Brief at .superpowers/sdd/<plan-name>/final-review-brief.md."
+     noriba-cli msg send "$SECURITY_REVIEWER_TID" "Follow the Security Reviewer Prompt Contract (prompts/security-reviewer-prompt.md of the noriba-subagent-driven-development skill). BRIEF_PATH=.superpowers/sdd/<plan-name>/final-review-brief.md PROFILE_PATH=.superpowers/sdd/<plan-name>/project-profile.md SPEC_PATH=<spec> PLAN_PATH=<plan> MERGE_BASE=$MERGE_BASE HEAD=$(git rev-parse HEAD) FINDINGS_PATH=.superpowers/sdd/<plan-name>/security-review-findings.md CONTROLLER_ROLE=controller"
      ```
   3. Await verdict (`Status: PASS - security`):
      - Immediately close the security reviewer tab upon receiving the verdict:
@@ -452,7 +491,7 @@ Check if the Implementation Plan or Design Spec declares `Security Review: Requi
   4. Post security verdict to PR comment:
      ```bash
      gh pr comment <PR_NUMBER> --body "### Security Review: PASS
-Branch diff audited against IPC DACL, shell escaping, cryptographic invariants, and path traversal checks."
+Branch diff audited against the threats declared in the design spec and the project's security focus."
      ```
 - **If Not Required**: Skip to Step 2.3.
 
@@ -490,7 +529,7 @@ The bootstrap prompt directs the reviewer to execute the [Whole-Branch Reviewer 
         Post whole-branch approval to PR comment:
         ```bash
         gh pr comment <PR_NUMBER> --body "### Whole-Branch Review: APPROVED
-Branch diff $MERGE_BASE..HEAD satisfies architectural cohesion, cross-platform integrity, and QA guidelines."
+Branch diff $MERGE_BASE..HEAD satisfies architectural cohesion, the project's rules, and every verification gate in the Project Profile."
         ```
         Proceed to Phase 3.
    - **Changes Requested (`Status: CHANGES_REQUESTED - whole-branch`)**:
@@ -543,13 +582,7 @@ Check whether the `superpowers:finishing-a-development-branch` skill is register
 
 - **Case B: Superpowers Absent (Native Finish Protocol)**:
   Execute the native completion protocol directly:
-  1. **Run Verification Commands**:
-     - `cargo check-win`
-     - `cargo check-mac`
-     - `cargo clippy --workspace --all-targets -- -D warnings`
-     - `cargo fmt --all --check`
-     - `cargo xtask qa lint`
-     - `cargo test --workspace`
+  1. **Run Verification Commands**: run every command listed under `verify` in `.superpowers/sdd/<plan-name>/project-profile.md` and confirm each one passes. Report any failure with its output instead of presenting the integration options.
   2. **Present Canonical Human Choices**:
      Display the exact three integration options and **STOP / WAIT INDEFINITELY**:
      ```text
@@ -618,9 +651,9 @@ For large, multi-area initiatives, the Root Controller can delegate entire sub-p
 
 ## 8. Invariants & Rules
 
-1. **Preserve Comments & Invariants**: Never defeat, bypass, or weaken subsystem invariants or architectural checks. All existing code comments and docstrings must be preserved.
-2. **Strict English Convention**: All code comments, commit messages (strictly single-line), and documentation must be in English.
-3. **File Size Guideline**: Maintain the ~1,000 line guideline ([#77](https://github.com/tablyrocks/noriba/issues/77)). Decompose large files behavior-neutrally into modular child components.
+1. **Preserve Comments & Invariants**: Never defeat, bypass, silence, or weaken safety checks, subsystem invariants, or architectural checks. Preserve existing code comments and docstrings.
+2. **Project Rules First**: Every subagent follows the rule files, conventions (comment and commit language, commit format, file size limits, ...) and verification commands recorded in the Project Profile. The project's own rules override any general practice in this skill; the skill adds none of its own.
+3. **No Invented Commands**: Verification commands come only from the project's documentation or the human partner (Step 0.2), never from guesses about the toolchain.
 4. **Context Isolation**: Never reuse an implementer's conversation context for reviews. Always spin up a fresh tab for reviewers.
 5. **Worker Tab Persistence**: Do not pass `--close-on-exit` to implementer worker tabs during task execution. Keep worker sessions alive until both review stages pass.
 6. **Zero Bare Subagent Invariant**: Subagents must NEVER be spawned without an explicit `--model <MODEL>` flag. Omitting the model flag or falling back to unconstrained host defaults is strictly prohibited.
@@ -640,3 +673,4 @@ For large, multi-area initiatives, the Root Controller can delegate entire sub-p
 - [Spec Reviewer Prompt Contract](prompts/spec-reviewer-prompt.md)
 - [Quality Reviewer Prompt Contract](prompts/quality-reviewer-prompt.md)
 - [Whole-Branch Reviewer Prompt Contract](prompts/whole-branch-reviewer-prompt.md)
+- [Security Reviewer Prompt Contract](prompts/security-reviewer-prompt.md)

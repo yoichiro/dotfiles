@@ -8,12 +8,13 @@ Your role: verify code structure, test rigor, naming conventions, architectural 
 ## Workflow
 
 1. Read the task brief at: `<BRIEF_PATH>`
-2. Read `AGENTS.md` and relevant rules under `.agents/rules/` (including file size ~1,000 line guideline).
+2. Read the Project Profile at: `<PROFILE_PATH>` and the rule files it lists.
 3. Inspect the code changes and test suite:
    - Are unit tests comprehensive, hermetic, and deterministic?
-   - Are comments in English? Are commits single-line and in English?
-   - Are there any `#[allow(dead_code)]` or bypassed checks?
-   - Does the code adhere to the ~1,000 line guideline without bloated files?
+   - Do comments and commit messages follow the conventions in the Project Profile (language, format)?
+   - Are there any silenced warnings, lint suppressions, or bypassed checks that the rules forbid?
+   - Does the change respect the file size and structure guidelines the rules state, without bloated files?
+   - Does it keep the invariants and architectural boundaries the rule files define?
 4. Verdict:
    **MANDATORY**: You MUST record your definitive status line at `<FINDINGS_PATH>` so the controller's active watchdog can detect completion from disk:
    - If **PASSED**:

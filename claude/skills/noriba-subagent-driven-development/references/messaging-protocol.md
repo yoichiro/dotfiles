@@ -35,6 +35,7 @@ All status messages returned to the controller or lead must strictly follow this
 ### Reviewer -> Controller
 - `Status: PASS - <task-id>`: The review stage passed with zero defects.
 - `Status: CHANGES_REQUESTED - <task-id> (Round <n>)`: Specific defects found; brief contains pointers to `task-<id>-review-findings.md`.
+- `Status: PASS - security` / `Status: CHANGES_REQUESTED - security`: Security review verdict; findings in `security-review-findings.md`.
 
 ### Sub-Controller -> Root Controller
 - `Status: SUB-PLAN COMPLETE - <area>`: All tasks in the delegated sub-plan are verified and pushed to the target branch.
